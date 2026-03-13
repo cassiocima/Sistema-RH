@@ -34,7 +34,6 @@
         </nav>
 
         <main class="max-w-7xl mx-auto p-6 mt-4">
-            
             <section id="aba-home" class="aba-item">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-white p-8 rounded-3xl shadow-sm">
@@ -60,7 +59,7 @@
                 </div>
                 <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden">
                     <div class="p-6 bg-slate-50 border-b flex gap-4">
-                        <input type="text" id="buscaFunc" onkeyup="renderEquipe()" placeholder="Buscar por nome ou cargo..." class="flex-1 p-3 rounded-xl border outline-none focus:border-indigo-500">
+                        <input type="text" id="buscaFunc" onkeyup="renderEquipe()" placeholder="Buscar por nome ou cargo..." class="flex-1 p-3 rounded-xl border border-slate-200 outline-none focus:border-indigo-500">
                     </div>
                     <table class="w-full text-left">
                         <thead class="bg-white text-[10px] font-black text-slate-400 uppercase border-b">
@@ -71,7 +70,7 @@
                                 <th class="p-6 text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="lista-equipe" class="divide-y text-sm"></tbody>
+                        <tbody id="lista-equipe" class="divide-y text-sm text-slate-600"></tbody>
                     </table>
                 </div>
             </section>
@@ -242,9 +241,7 @@
                 dep: parseInt(document.getElementById('f-dep').value || 0)
             };
 
-            // Validações RDP
             if(!f.nome || !f.cpf || !f.salario || !f.nasc) return alert("Preencha todos os campos obrigatórios (*)");
-            if(new Date(f.nasc) > new Date()) return alert("Data de nascimento inválida!");
 
             if(idEdicao) {
                 const idx = bd.findIndex(x => x.id === idEdicao);
