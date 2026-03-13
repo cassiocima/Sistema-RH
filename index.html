@@ -104,9 +104,73 @@
             </div>
         </section>
 
-        <section id="aba-equipe" class="aba-item">
-            <div id="container-equipe"></div>
-        </section>
+       <section id="aba-equipe" class="aba-item">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-black uppercase italic">Gestão de Colaboradores</h2>
+        <button onclick="abrirModal()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black shadow-lg hover:bg-indigo-700 transition">+ NOVO CADASTRO</button>
+    </div>
+    <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase border-b">
+                <tr>
+                    <th class="p-6">Colaborador / Cargo</th>
+                    <th class="p-6">Status</th>
+                    <th class="p-6">Dependentes</th>
+                    <th class="p-6 text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="lista-equipe" class="divide-y text-sm">
+                </tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+    // --- ADICIONE OU ATUALIZE ESTA FUNÇÃO NO SEU <SCRIPT> ---
+    function renderEquipe() {
+        const lista = document.getElementById('lista-equipe');
+        if (!lista) return;
+
+        lista.innerHTML = dbFunc.map(f => `
+            <tr class="hover:bg-slate-50 transition">
+                <td class="p-6">
+                    <p class="font-black text-slate-800 uppercase">${f.nome}</p>
+                    <p class="text-[10px] text-indigo-500 font-bold">${f.cargo}</p>
+                </td>
+                <td class="p-6">
+                    <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${f.status === 'Ativo' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}">
+                        ${f.status || 'Ativo'}
+                    </span>
+                </td>
+                <td class="p-6 text-xs text-slate-400 font-bold">${f.dependentes?.length || 0} Dependentes</td>
+                <td class="p-6 text-right space-x-3">
+                    <button onclick="editar(${f.id})" class="text-indigo-600 font-black text-[10px] hover:underline">EDITAR</button>
+                    <button onclick="excluirFunc(${f.id})" class="text-rose-500 font-black text-[10px] hover:underline">EXCLUIR</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function excluirFunc(id) {
+        if(confirm("Deseja realmente excluir este colaborador e todos os seus lançamentos?")) {
+            dbFunc = dbFunc.filter(x => x.id !== id);
+            dbLancamentos = dbLancamentos.filter(x => x.funcId != id); // Limpa lançamentos órfãos
+            localStorage.setItem('RH_FUNC_V3', JSON.stringify(dbFunc));
+            localStorage.setItem('RH_LANC_V3', JSON.stringify(dbLancamentos));
+            atualizarTudo();
+        }
+    }
+
+    // Certifique-se que atualizarTudo chama a renderEquipe
+    function atualizarTudo() {
+        renderRubricas();
+        renderSelects();
+        renderListaLancamentos();
+        renderDashboard();
+        renderFolha();
+        renderEquipe(); // <-- O botão voltou a funcionar aqui
+    }
+</script>
 
         <section id="aba-financeiro" class="aba-item">
             <div id="grid-folha" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
