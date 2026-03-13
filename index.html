@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RH Master - Dashboard v4.0</title>
+    <title>RH Master - Sistema Customizável</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
-    <nav class="bg-indigo-900 text-white shadow-xl sticky top-0 z-50">
+    <nav class="bg-slate-900 text-white shadow-xl sticky top-0 z-50">
         <div class="max-w-6xl mx-auto flex justify-between items-center p-4">
-            <h1 class="font-black text-2xl italic tracking-tighter">RH<span class="text-indigo-400">_DASH</span></h1>
-            <div class="flex gap-4 md:gap-8 overflow-x-auto">
-                <button onclick="mudarAba('aba-home')" class="text-xs font-black uppercase hover:text-indigo-300 transition">Início</button>
-                <button onclick="mudarAba('aba-equipe')" class="text-xs font-black uppercase hover:text-indigo-300 transition">Equipe</button>
-                <button onclick="mudarAba('aba-folha')" class="text-xs font-black uppercase hover:text-indigo-300 transition">Financeiro</button>
-                <button onclick="mudarAba('aba-ponto')" class="text-xs font-black uppercase hover:text-indigo-300 transition">Ponto</button>
+            <h1 id="nav-empresa" class="font-black text-xl tracking-tighter text-indigo-400 uppercase">MINHA EMPRESA</h1>
+            <div class="flex gap-3 md:gap-6 overflow-x-auto py-2">
+                <button onclick="mudarAba('aba-home')" class="text-[10px] font-black uppercase hover:text-indigo-300">Dashboard</button>
+                <button onclick="mudarAba('aba-equipe')" class="text-[10px] font-black uppercase hover:text-indigo-300">Equipe</button>
+                <button onclick="mudarAba('aba-folha')" class="text-[10px] font-black uppercase hover:text-indigo-300">Financeiro</button>
+                <button onclick="mudarAba('aba-config')" class="text-[10px] font-black uppercase text-yellow-400">⚙️ Config</button>
             </div>
         </div>
     </nav>
@@ -25,131 +25,129 @@
     <main class="max-w-6xl mx-auto p-4 mt-6 pb-20">
         
         <section id="aba-home" class="aba-item">
-            <h2 class="text-2xl font-black text-slate-800 mb-6">Indicadores Gerais</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-indigo-500">
-                    <p class="text-slate-400 text-xs font-bold uppercase">Total em Salários</p>
-                    <p id="dash-custo" class="text-3xl font-black text-slate-800">R$ 0,00</p>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border-l-8 border-indigo-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase">Folha Total</p>
+                    <p id="dash-custo" class="text-2xl font-black text-slate-800">R$ 0,00</p>
                 </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-emerald-500">
-                    <p class="text-slate-400 text-xs font-bold uppercase">Colaboradores</p>
-                    <p id="dash-total" class="text-3xl font-black text-slate-800">0</p>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border-l-8 border-emerald-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase">Funcionários</p>
+                    <p id="dash-total" class="text-2xl font-black text-slate-800">0</p>
                 </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-amber-500">
-                    <p class="text-slate-400 text-xs font-bold uppercase">Média Salarial</p>
-                    <p id="dash-media" class="text-3xl font-black text-slate-800">R$ 0,00</p>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border-l-8 border-amber-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase">Média</p>
+                    <p id="dash-media" class="text-2xl font-black text-slate-800">R$ 0,00</p>
                 </div>
             </div>
-            
-            <div class="bg-white p-8 rounded-3xl shadow-sm border max-w-2xl mx-auto">
-                <h3 class="font-bold text-slate-500 text-center mb-4">Comparativo de Salários</h3>
-                <canvas id="meuGrafico"></canvas>
-            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border"><canvas id="meuGrafico"></canvas></div>
         </section>
 
         <section id="aba-equipe" class="aba-item hidden">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border mb-8 max-w-2xl">
-                <h2 class="font-bold mb-4">Novo Cadastro</h2>
-                <div class="grid grid-cols-1 gap-4">
-                    <input type="text" id="nomeInput" placeholder="Nome Completo" class="border p-4 rounded-2xl outline-none bg-slate-50">
-                    <input type="number" id="salarioInput" placeholder="Salário Bruto" class="border p-4 rounded-2xl outline-none bg-slate-50">
-                    <button onclick="cadastrar()" class="bg-indigo-600 text-white font-black p-4 rounded-2xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">CADASTRAR</button>
-                </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border mb-6 max-w-xl">
+                <h2 class="font-bold mb-4">Novo Registro</h2>
+                <input type="text" id="nomeInput" placeholder="Nome" class="border p-3 w-full rounded-xl mb-3 bg-slate-50">
+                <input type="number" id="salarioInput" placeholder="Salário" class="border p-3 w-full rounded-xl mb-3 bg-slate-50">
+                <button onclick="cadastrar()" class="bg-indigo-600 text-white font-bold w-full p-3 rounded-xl hover:bg-indigo-700">CADASTRAR</button>
             </div>
-            <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-50 border-b">
-                        <tr><th class="p-4 text-xs font-bold">NOME</th><th class="p-4 text-right">ACÇÃO</th></tr>
-                    </thead>
-                    <tbody id="tabelaCorpo"></tbody>
-                </table>
-            </div>
+            <div class="bg-white rounded-3xl shadow-sm border overflow-hidden"><table class="w-full text-left"><tbody id="tabelaCorpo"></tbody></table></div>
         </section>
 
         <section id="aba-folha" class="aba-item hidden">
-            <h2 class="text-2xl font-black mb-6">Folha de Pagamento</h2>
-            <div id="gridFolha" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="gridFolha" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
         </section>
 
-        <section id="aba-ponto" class="aba-item hidden text-center">
-            <div class="bg-indigo-900 text-white p-12 rounded-[3rem] shadow-2xl inline-block w-full max-w-sm border-8 border-indigo-800">
-                <div id="relogio" class="text-5xl font-mono font-black mb-8 tracking-tighter">00:00:00</div>
-                <button onclick="registrarPonto()" class="bg-white text-indigo-900 w-full py-5 rounded-3xl font-black text-xl hover:bg-indigo-100 transition shadow-xl uppercase">Registrar Agora</button>
+        <section id="aba-config" class="aba-item hidden">
+            <div class="bg-white p-8 rounded-[2rem] shadow-sm border max-w-lg mx-auto">
+                <h2 class="text-2xl font-black text-slate-800 mb-6">Configurações do Sistema</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Nome da Organização</label>
+                        <input type="text" id="config-nome-empresa" placeholder="Ex: Master RH Ltda" class="w-full border-2 border-slate-100 p-4 rounded-2xl outline-none focus:border-indigo-500 transition">
+                    </div>
+                    <button onclick="salvarConfig()" class="w-full bg-slate-900 text-white font-black p-4 rounded-2xl hover:bg-black transition">APLICAR MUDANÇAS</button>
+                </div>
+                <p class="mt-6 text-center text-xs text-slate-400 font-medium italic">Versão 5.0 - Atualizado em 2026</p>
             </div>
-            <div id="listaPonto" class="max-w-md mx-auto mt-10 space-y-2"></div>
         </section>
 
     </main>
 
     <div id="render-pdf" class="hidden p-10 bg-white" style="width: 800px;">
-        <h1 style="color: #312e81; font-size: 28px; font-weight: 900; border-bottom: 4px solid #312e81; padding-bottom: 10px;">RECIBO SALARIAL</h1>
-        <div style="margin-top: 30px; font-size: 18px;">
-            <p><strong>COLABORADOR:</strong> <span id="pdf-nome"></span></p>
-            <p><strong>SALÁRIO BRUTO:</strong> R$ <span id="pdf-bruto"></span></p>
-            <p style="color: #991b1b;"><strong>DESCONTO INSS:</strong> R$ <span id="pdf-inss"></span></p>
-            <hr style="margin: 20px 0;">
-            <p style="font-size: 24px; color: #1e40af;"><strong>LÍQUIDO: R$ <span id="pdf-liquido"></span></strong></p>
+        <h1 id="pdf-empresa-nome" style="font-size: 24px; font-weight: 900; color: #1e1b4b; text-transform: uppercase;"></h1>
+        <p style="border-bottom: 2px solid #eee; padding-bottom: 10px;">Comprovante de Rendimentos Mensal</p>
+        <div style="margin-top: 20px;">
+            <p><strong>NOME:</strong> <span id="pdf-nome"></span></p>
+            <p><strong>SALÁRIO:</strong> R$ <span id="pdf-bruto"></span></p>
+            <p><strong>DESCONTO:</strong> R$ <span id="pdf-inss"></span></p>
+            <h2 style="color: #4338ca; margin-top: 20px;">LÍQUIDO: R$ <span id="pdf-liquido"></span></h2>
         </div>
     </div>
 
     <script>
         let meuGrafico = null;
 
+        // --- FUNÇÕES DE CONFIGURAÇÃO ---
+        function salvarConfig() {
+            const nome = document.getElementById('config-nome-empresa').value;
+            if(!nome) return alert("Digite um nome!");
+            localStorage.setItem('rh_empresa_nome', nome);
+            aplicarConfig();
+            alert("Sistema atualizado!");
+        }
+
+        function aplicarConfig() {
+            const nomeSalvo = localStorage.getItem('rh_empresa_nome') || "RH MASTER PRO";
+            document.getElementById('nav-empresa').innerText = nomeSalvo;
+            document.getElementById('pdf-empresa-nome').innerText = nomeSalvo;
+            document.getElementById('config-nome-empresa').value = nomeSalvo;
+        }
+
+        // --- GESTÃO DE TELAS ---
         function mudarAba(id) {
             document.querySelectorAll('.aba-item').forEach(aba => aba.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             if(id === 'aba-home') atualizarDashboard();
             if(id === 'aba-folha') renderFolha();
-            if(id === 'aba-ponto') renderPonto();
         }
 
-        setInterval(() => {
-            const el = document.getElementById('relogio');
-            if(el) el.innerText = new Date().toLocaleTimeString();
-        }, 1000);
-
+        // --- DADOS ---
         function cadastrar() {
             const n = document.getElementById('nomeInput').value;
             const s = document.getElementById('salarioInput').value;
             if(!n || !s) return alert("Preencha tudo!");
-
-            const bd = JSON.parse(localStorage.getItem('rh_v5')) || [];
+            const bd = JSON.parse(localStorage.getItem('rh_v6')) || [];
             bd.push({ id: Date.now(), nome: n, salario: parseFloat(s) });
-            localStorage.setItem('rh_v5', JSON.stringify(bd));
-            
+            localStorage.setItem('rh_v6', JSON.stringify(bd));
             document.getElementById('nomeInput').value = '';
             document.getElementById('salarioInput').value = '';
             renderEquipe();
-            alert("Sucesso!");
+            alert("Salvo!");
         }
 
         function renderEquipe() {
-            const bd = JSON.parse(localStorage.getItem('rh_v5')) || [];
+            const bd = JSON.parse(localStorage.getItem('rh_v6')) || [];
             document.getElementById('tabelaCorpo').innerHTML = bd.map(f => `
-                <tr class="border-b"><td class="p-4 font-bold text-slate-700">${f.nome}</td>
-                <td class="p-4 text-right"><button onclick="excluir(${f.id})" class="text-rose-500 font-bold text-xs uppercase underline">Remover</button></td></tr>
+                <tr class="border-b"><td class="p-4 font-bold text-slate-700 uppercase text-xs">${f.nome}</td>
+                <td class="p-4 text-right"><button onclick="excluir(${f.id})" class="text-rose-500 font-black text-[10px] uppercase">Excluir</button></td></tr>
             `).join('');
         }
 
         function excluir(id) {
-            let bd = JSON.parse(localStorage.getItem('rh_v5')) || [];
-            localStorage.setItem('rh_v5', JSON.stringify(bd.filter(x => x.id !== id)));
+            let bd = JSON.parse(localStorage.getItem('rh_v6')) || [];
+            localStorage.setItem('rh_v6', JSON.stringify(bd.filter(x => x.id !== id)));
             renderEquipe();
-            atualizarDashboard();
         }
 
         function renderFolha() {
-            const bd = JSON.parse(localStorage.getItem('rh_v5')) || [];
+            const bd = JSON.parse(localStorage.getItem('rh_v6')) || [];
             document.getElementById('gridFolha').innerHTML = bd.map(f => {
                 const inss = f.salario * 0.11;
                 const liq = f.salario - inss;
-                return `
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                        <h3 class="font-black text-slate-800 truncate">${f.nome}</h3>
-                        <p class="text-indigo-600 font-black text-xl mt-2 italic">R$ ${liq.toFixed(2)}</p>
-                        <button onclick="baixarPDF('${f.nome}', ${f.salario}, ${inss}, ${liq})" class="w-full mt-4 bg-slate-900 text-white py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase">Gerar PDF</button>
-                    </div>
-                `;
+                return `<div class="bg-white p-6 rounded-3xl shadow-sm border">
+                    <p class="font-black text-slate-800 truncate">${f.nome.toUpperCase()}</p>
+                    <p class="text-indigo-600 font-black text-xl mt-2">R$ ${liq.toFixed(2)}</p>
+                    <button onclick="baixarPDF('${f.nome}', ${f.salario}, ${inss}, ${liq})" class="w-full mt-4 bg-slate-900 text-white py-3 rounded-2xl text-[10px] font-black uppercase">PDF</button>
+                </div>`;
             }).join('');
         }
 
@@ -163,56 +161,30 @@
             html2pdf().from(area).save(`Holerite_${n}.pdf`).then(() => area.classList.add('hidden'));
         }
 
-        function registrarPonto() {
-            const logs = JSON.parse(localStorage.getItem('ponto_v5')) || [];
-            logs.unshift(new Date().toLocaleString());
-            localStorage.setItem('ponto_v5', JSON.stringify(logs));
-            renderPonto();
-            alert("Ponto Marcado!");
-        }
-
-        function renderPonto() {
-            const logs = JSON.parse(localStorage.getItem('ponto_v5')) || [];
-            document.getElementById('listaPonto').innerHTML = logs.map(l => `
-                <div class="bg-white p-4 rounded-2xl shadow-sm border text-sm font-bold text-slate-600">${l}</div>
-            `).join('');
-        }
-
-        // --- DASHBOARD: A NOVA INTELIGÊNCIA ---
         function atualizarDashboard() {
-            const bd = JSON.parse(localStorage.getItem('rh_v5')) || [];
-            const totalCusto = bd.reduce((acc, f) => acc + f.salario, 0);
-            const media = bd.length > 0 ? totalCusto / bd.length : 0;
-
-            document.getElementById('dash-custo').innerText = `R$ ${totalCusto.toFixed(2)}`;
+            const bd = JSON.parse(localStorage.getItem('rh_v6')) || [];
+            const total = bd.reduce((acc, f) => acc + f.salario, 0);
+            document.getElementById('dash-custo').innerText = `R$ ${total.toFixed(2)}`;
             document.getElementById('dash-total').innerText = bd.length;
-            document.getElementById('dash-media').innerText = `R$ ${media.toFixed(2)}`;
-
+            document.getElementById('dash-media').innerText = `R$ ${(bd.length ? total/bd.length : 0).toFixed(2)}`;
             renderGrafico(bd);
         }
 
         function renderGrafico(bd) {
             const ctx = document.getElementById('meuGrafico').getContext('2d');
-            
-            // Destruir gráfico antigo se existir para evitar bugs
             if(meuGrafico) meuGrafico.destroy();
-
             meuGrafico = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: bd.map(f => f.nome.split(' ')[0]),
-                    datasets: [{
-                        label: 'Salário Bruto (R$)',
-                        data: bd.map(f => f.salario),
-                        backgroundColor: '#6366f1',
-                        borderRadius: 10
-                    }]
+                    datasets: [{ label: 'Salário', data: bd.map(f => f.salario), backgroundColor: '#6366f1', borderRadius: 8 }]
                 },
-                options: { responsive: true, plugins: { legend: { display: false } } }
+                options: { responsive: true }
             });
         }
 
-        // Início
+        // INICIALIZAÇÃO AO CARREGAR
+        aplicarConfig();
         renderEquipe();
         atualizarDashboard();
     </script>
