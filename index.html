@@ -1,28 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RH Master - Oficial</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-<body class="p-10 bg-gray-200">
-    <div class="bg-white p-6 rounded shadow-xl max-w-md mx-auto">
-        <h1 class="font-bold mb-4">Teste de Cadastro</h1>
-        <input type="text" id="testeNome" placeholder="Nome" class="border p-2 w-full mb-2">
-        <button onclick="testar()" class="bg-blue-500 text-white p-2 w-full">CADASTRAR</button>
+<body class="bg-slate-100 font-sans">
+
+    <nav class="bg-blue-800 text-white p-4 shadow-lg mb-6">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="font-black text-xl tracking-tight">RH_MASTER PRO</h1>
+            <div class="space-x-4">
+                <button onclick="aba('painel')" class="text-sm font-bold hover:underline">EQUIPE</button>
+                <button onclick="aba('financeiro')" class="text-sm font-bold hover:underline">FOLHA/PDF</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-4">
         
-        <div id="resultado" class="mt-4 font-bold text-green-600"></div>
+        <section id="painel">
+            <div class="bg-white p-6 rounded-xl shadow-sm border mb-6">
+                <h2 class="font-bold text-gray-700 mb-4">Novo Colaborador</h2>
+                <div class="flex flex-col md:flex-row gap-3">
+                    <input type="text" id="fnome" placeholder="Nome Completo" class="flex-1 border p-2 rounded">
+                    <input type="number" id="fsalario" placeholder="Salário Bruto" class="border p-2 rounded w-full md:w-40">
+                    <button onclick="adicionar()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">ADICIONAR</button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-50 border-b">
+                        <tr><th class="p-3">Nome</th><th class="p-3">Salário</th><th class="p-3 text-right">Acção</th></tr>
+                    </thead>
+                    <tbody id="tabela-corpo"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="financeiro" class="hidden">
+            <h2 class="font-bold text-xl mb-4 text-blue-800">Processamento de Salários</h2>
+            <div id="lista-holerites" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+        </section>
+
+    </main>
+
+    <div id="area-pdf" class="hidden p-10">
+        <h1 style="font-size: 24px; border-bottom: 2px solid #000;">RECIBO DE VENCIMENTO</h1>
+        <p style="margin-top: 20px;"><strong>Colaborador:</strong> <span id="pdf-n"></span></p>
+        <p><strong>Salário Bruto:</strong> R$ <span id="pdf-s"></span></p>
+        <p style="color: red;"><strong>Desconto INSS (11%):</strong> R$ <span id="pdf-i"></span></p>
+        <hr>
+        <h2 style="color: blue;">LÍQUIDO A RECEBER: R$ <span id="pdf-l"></span></h2>
     </div>
 
     <script>
-        function testar() {
-            const nome = document.getElementById('testeNome').value;
-            if(nome) {
-                document.getElementById('resultado').innerText = "Sucesso: " + nome + " cadastrado!";
-                document.getElementById('testeNome').value = "";
-            } else {
-                alert("Digite um nome!");
-            }
+        // Função para trocar de aba
+        function aba(id) {
+            document.getElementById('painel').classList.add('hidden');
+            document.getElementById('financeiro').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'financeiro') carregarFolha();
         }
+
+        // Adicionar funcionário
+        function adicionar() {
+            const nome = document.getElementById('fnome').value;
+            const salario = document.getElementById('fsalario').value;
+
+            if(!nome || !salario) return alert("Preencha os campos!");
+
+            const lista = JSON.parse(localStorage.getItem('bd_rh')) || [];
+            lista.push({ id: Date.now(), nome: nome, salario: parseFloat(salario) });
+            localStorage.setItem('bd_rh', JSON.stringify(lista));
+
+            document.getElementById('fnome').value = '';
+            document.getElementById('fsalario').value = '';
+            carregarTabela();
+            alert("Cadastrado!");
+        }
+
+        // Listar na tabela
+        function carregarTabela() {
+            const lista = JSON.parse(localStorage.getItem('bd_rh')) || [];
+            const corpo = document.getElementById('tabela-corpo');
+            corpo.innerHTML = lista.map(f => `
+                <tr class="border-b">
+                    <td class="p-3 font-medium">${f.nome}</td>
+                    <td class="p-3 text-gray-600">R$ ${f.salario.toFixed(2)}</td>
+                    <td class="p-3 text-right"><button onclick="remover(${f.id})" class="text-red-500 hover:underline">Remover</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function remover(id) {
+            let lista = JSON.parse(localStorage.getItem('bd_rh')) || [];
+            lista = lista.filter(x => x.id !== id);
+            localStorage.setItem('bd_rh', JSON.stringify(lista));
+            carregarTabela();
+        }
+
+        // Gerar Holerites na aba financeira
+        function carregarFolha() {
+            const lista = JSON.parse(localStorage.getItem('bd_rh')) || [];
+            const container = document.getElementById('lista-holerites');
+            container.innerHTML = lista.map(f => {
+                const inss = f.salario * 0.11;
+                const liq = f.salario - inss;
+                return `
+                    <div class="bg-white p-4 rounded-lg shadow-sm border-t-4 border-blue-500">
+                        <p class="font-bold text-gray-800">${f.nome}</p>
+                        <p class="text-xs text-gray-500 mb-2">Líquido: R$ ${liq.toFixed(2)}</p>
+                        <button onclick="gerarPDF('${f.nome}', ${f.salario}, ${inss}, ${liq})" class="w-full bg-slate-800 text-white text-xs py-2 rounded font-bold uppercase">Gerar PDF</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Função do PDF
+        function gerarPDF(n, s, i, l) {
+            document.getElementById('pdf-n').innerText = n;
+            document.getElementById('pdf-s').innerText = s.toFixed(2);
+            document.getElementById('pdf-i').innerText = i.toFixed(2);
+            document.getElementById('pdf-l').innerText = l.toFixed(2);
+            
+            const area = document.getElementById('area-pdf');
+            area.classList.remove('hidden');
+            
+            const opt = { margin: 1, filename: 'Holerite_'+n+'.pdf', jsPDF: { unit: 'in', format: 'letter' } };
+            html2pdf().from(area).set(opt).save().then(() => area.classList.add('hidden'));
+        }
+
+        // Iniciar carregando a tabela
+        carregarTabela();
     </script>
 </body>
 </html>
