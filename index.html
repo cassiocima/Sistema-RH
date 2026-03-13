@@ -76,4 +76,117 @@
                 <div class="bg-white p-6 rounded-xl border-t-4 border-yellow-500 shadow-sm">
                     <h3 class="font-bold text-lg">Analista de RH</h3>
                     <p class="text-gray-500 text-sm mb-4">São Paulo - Híbrido</p>
-                    <span class="bg-green-100 text-green-700 px-2 py-
+                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">ABERTA</span>
+                </div>
+                <div class="bg-white p-6 rounded-xl border-t-4 border-blue-500 shadow-sm opacity-50">
+                    <h3 class="font-bold text-lg">Desenvolvedor Jr</h3>
+                    <p class="text-gray-500 text-sm mb-4">Remoto</p>
+                    <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-bold">ENCERRADA</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="modelo-pdf" class="hidden bg-white p-10">
+        <h1 class="text-2xl font-bold border-b-2 pb-2">RECIBO DE PAGAMENTO</h1>
+        <div class="mt-4">
+            <p><strong>Funcionário:</strong> <span id="pdf-nome"></span></p>
+            <p><strong>Salário Base:</strong> R$ <span id="pdf-salario"></span></p>
+            <p class="text-red-600 font-bold">Desconto INSS: R$ <span id="pdf-inss"></span></p>
+            <hr class="my-4">
+            <p class="text-xl font-black">LÍQUIDO: R$ <span id="pdf-liquido"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Relógio em tempo real
+        setInterval(() => {
+            document.getElementById('relogio').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+
+        function mudarAba(aba) {
+            const abas = ['cadastro', 'folha', 'ponto', 'vagas'];
+            abas.forEach(a => {
+                document.getElementById(`aba-${a}`).classList.toggle('hidden', a !== aba);
+                document.getElementById(`m-${a}`).classList.toggle('active-tab', a === aba);
+            });
+            if(aba === 'folha') renderizarFolha();
+            if(aba === 'ponto') renderizarPonto();
+        }
+
+        // Funções de Funcionários
+        function salvarFunc(e) {
+            e.preventDefault();
+            const dados = JSON.parse(localStorage.getItem('rh_master_v3')) || [];
+            dados.push({ id: Date.now(), nome: document.getElementById('nome').value, salario: parseFloat(document.getElementById('salario').value) });
+            localStorage.setItem('rh_master_v3', JSON.stringify(dados));
+            document.getElementById('formFuncionario').reset();
+            renderizarLista();
+        }
+
+        function renderizarLista() {
+            const dados = JSON.parse(localStorage.getItem('rh_master_v3')) || [];
+            document.getElementById('listaFuncionarios').innerHTML = dados.map(f => `
+                <tr class="border-t">
+                    <td class="p-4 font-medium">${f.nome}</td>
+                    <td class="p-4">R$ ${f.salario.toFixed(2)}</td>
+                    <td class="p-4 text-right"><button onclick="excluir(${f.id})" class="text-red-500 font-bold">Remover</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function excluir(id) {
+            let dados = JSON.parse(localStorage.getItem('rh_master_v3')) || [];
+            localStorage.setItem('rh_master_v3', JSON.stringify(dados.filter(f => f.id !== id)));
+            renderizarLista();
+        }
+
+        // Funções de Folha e PDF
+        function renderizarFolha() {
+            const dados = JSON.parse(localStorage.getItem('rh_master_v3')) || [];
+            const container = document.getElementById('cardsFolha');
+            container.innerHTML = dados.map(f => {
+                const inss = f.salario * 0.09;
+                const liq = f.salario - inss;
+                return `
+                    <div class="bg-white p-6 rounded-xl border shadow-sm">
+                        <h3 class="font-bold text-gray-800">${f.nome}</h3>
+                        <p class="text-blue-600 font-black text-xl my-2">R$ ${liq.toFixed(2)}</p>
+                        <button onclick="gerarPDF('${f.nome}', ${f.salario}, ${inss}, ${liq})" class="text-xs bg-gray-800 text-white px-3 py-1 rounded">Baixar Holerite</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function gerarPDF(n, s, i, l) {
+            document.getElementById('pdf-nome').innerText = n;
+            document.getElementById('pdf-salario').innerText = s.toFixed(2);
+            document.getElementById('pdf-inss').innerText = i.toFixed(2);
+            document.getElementById('pdf-liquido').innerText = l.toFixed(2);
+            const el = document.getElementById('modelo-pdf');
+            el.classList.remove('hidden');
+            html2pdf().from(el).save(`Holerite_${n}.pdf`).then(() => el.classList.add('hidden'));
+        }
+
+        // Funções de Ponto
+        function baterPonto(tipo) {
+            const pontos = JSON.parse(localStorage.getItem('ponto_rh')) || [];
+            pontos.push({ data: new Date().toLocaleDateString(), hora: new Date().toLocaleTimeString(), tipo: tipo });
+            localStorage.setItem('ponto_rh', JSON.stringify(pontos));
+            renderizarPonto();
+            alert(`Ponto de ${tipo} registrado!`);
+        }
+
+        function renderizarPonto() {
+            const pontos = JSON.parse(localStorage.getItem('ponto_rh')) || [];
+            document.getElementById('listaPonto').innerHTML = pontos.reverse().map(p => `
+                <tr class="border-t"><td class="p-4">${p.data}</td><td class="p-4 font-bold">${p.tipo}</td><td class="p-4 font-mono">${p.hora}</td></tr>
+            `).join('');
+        }
+
+        document.getElementById('formFuncionario').onsubmit = salvarFunc;
+        renderizarLista();
+    </script>
+</body>
+</html>
