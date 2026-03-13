@@ -1,124 +1,28 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RH Master - Versão Corrigida</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-<body class="bg-gray-100 font-sans">
-
-    <div class="flex flex-col md:flex-row min-h-screen">
+<body class="p-10 bg-gray-200">
+    <div class="bg-white p-6 rounded shadow-xl max-w-md mx-auto">
+        <h1 class="font-bold mb-4">Teste de Cadastro</h1>
+        <input type="text" id="testeNome" placeholder="Nome" class="border p-2 w-full mb-2">
+        <button onclick="testar()" class="bg-blue-500 text-white p-2 w-full">CADASTRAR</button>
         
-        <nav class="w-full md:w-64 bg-blue-900 text-white p-6 space-y-4">
-            <div class="text-2xl font-black mb-8 border-b border-blue-700 pb-2 text-center md:text-left">RH MASTER</div>
-            
-            <button onclick="mudarAba('cadastro')" class="w-full text-left p-3 rounded hover:bg-blue-800 font-bold transition flex items-center">
-                <span class="mr-2">👥</span> Equipe
-            </button>
-            <button onclick="mudarAba('folha')" class="w-full text-left p-3 rounded hover:bg-blue-800 font-bold transition flex items-center">
-                <span class="mr-2">💰</span> Folha
-            </button>
-            <button onclick="mudarAba('ponto')" class="w-full text-left p-3 rounded hover:bg-blue-800 font-bold transition flex items-center">
-                <span class="mr-2">⏰</span> Ponto
-            </button>
-        </nav>
-
-        <main class="flex-1 p-4 md:p-10">
-            
-            <section id="aba-cadastro" class="block">
-                <h2 class="text-2xl font-bold mb-6">Cadastro de Colaboradores</h2>
-                <div class="bg-white p-6 rounded-xl shadow mb-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="nome" placeholder="Nome Completo" class="border p-3 rounded">
-                        <input type="number" id="salario" placeholder="Salário Bruto" class="border p-3 rounded">
-                        <button onclick="salvarNovo()" class="md:col-span-2 bg-blue-600 text-white py-3 rounded font-bold hover:bg-blue-700">SALVAR AGORA</button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow overflow-hidden">
-                    <table class="w-full">
-                        <thead class="bg-gray-200">
-                            <tr><th class="p-3 text-left">Nome</th><th class="p-3 text-left">Salário</th><th class="p-3">Ação</th></tr>
-                        </thead>
-                        <tbody id="tabela-equipe"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="aba-folha" class="hidden">
-                <h2 class="text-2xl font-bold mb-6">Folha de Pagamento & PDF</h2>
-                <div id="lista-folha" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-            </section>
-
-            <section id="aba-ponto" class="hidden text-center">
-                <h2 class="text-2xl font-bold mb-6 text-left">Registro de Ponto</h2>
-                <div class="bg-white p-10 rounded-xl shadow inline-block">
-                    <p id="txt-relogio" class="text-4xl font-mono mb-4">00:00:00</p>
-                    <button onclick="baterPonto()" class="bg-green-600 text-white px-8 py-3 rounded font-bold">REGISTRAR ENTRADA/SAÍDA</button>
-                </div>
-                <div class="mt-8 bg-white rounded shadow text-left max-w-md mx-auto overflow-hidden">
-                    <table class="w-full">
-                        <tbody id="tabela-ponto"></tbody>
-                    </table>
-                </div>
-            </section>
-
-        </main>
-    </div>
-
-    <div id="pdf-container" class="hidden p-10 bg-white">
-        <h1>HOLERITE DIGITAL</h1>
-        <hr>
-        <p><strong>Nome:</strong> <span id="pdf-n"></span></p>
-        <p><strong>Bruto:</strong> R$ <span id="pdf-s"></span></p>
-        <p><strong>INSS (11%):</strong> R$ <span id="pdf-i"></span></p>
-        <h2 style="color: blue;">LÍQUIDO: R$ <span id="pdf-l"></span></h2>
+        <div id="resultado" class="mt-4 font-bold text-green-600"></div>
     </div>
 
     <script>
-        // 1. RELÓGIO
-        setInterval(() => {
-            const r = document.getElementById('txt-relogio');
-            if(r) r.innerText = new Date().toLocaleTimeString();
-        }, 1000);
-
-        // 2. TROCA DE ABAS (SIMPLIFICADA)
-        function mudarAba(idAba) {
-            document.getElementById('aba-cadastro').classList.add('hidden');
-            document.getElementById('aba-folha').classList.add('hidden');
-            document.getElementById('aba-ponto').classList.add('hidden');
-            
-            document.getElementById('aba-' + idAba).classList.remove('hidden');
-            
-            if(idAba === 'folha') renderFolha();
-            if(idAba === 'ponto') renderPonto();
+        function testar() {
+            const nome = document.getElementById('testeNome').value;
+            if(nome) {
+                document.getElementById('resultado').innerText = "Sucesso: " + nome + " cadastrado!";
+                document.getElementById('testeNome').value = "";
+            } else {
+                alert("Digite um nome!");
+            }
         }
-
-        // 3. SALVAR FUNCIONÁRIO
-        function salvarNovo() {
-            const n = document.getElementById('nome').value;
-            const s = document.getElementById('salario').value;
-
-            if(!n || !s) return alert("Preencha tudo!");
-
-            const lista = JSON.parse(localStorage.getItem('rh_final')) || [];
-            lista.push({ id: Date.now(), nome: n, salario: parseFloat(s) });
-            localStorage.setItem('rh_final', JSON.stringify(lista));
-
-            document.getElementById('nome').value = '';
-            document.getElementById('salario').value = '';
-            renderEquipe();
-            alert("Salvo com sucesso!");
-        }
-
-        // 4. LISTAR EQUIPE
-        function renderEquipe() {
-            const lista = JSON.parse(localStorage.getItem('rh_final')) || [];
-            const tb = document.getElementById('tabela-equipe');
-            tb.innerHTML = lista.map(f => `
-                <tr class="border-t">
-                    <td class="p-3">${f.nome}</td>
-                    <td class="p-3">R$ ${f.salario.toFixed(2)}</td>
-                    <td class="p-3 text-center"><button onclick="re
+    </script>
+</body>
+</html>
