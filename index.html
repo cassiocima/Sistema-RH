@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RH Master ERP - Folha de Pagamento Total</title>
+    <title>RH Master ERP - RDP Compliance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,67 +11,63 @@
 <body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
 
     <div id="tela-login" class="fixed inset-0 z-[100] bg-indigo-950 flex items-center justify-center p-4">
-        <div class="bg-white p-10 rounded-[3rem] shadow-2xl w-full max-w-md border-t-8 border-indigo-500">
-            <h2 class="text-3xl font-black text-center mb-2 text-slate-900">RH_ERP</h2>
-            <p class="text-center text-slate-400 text-sm mb-8 font-bold uppercase tracking-widest">Enterprise Control</p>
-            <input type="text" id="login-user" placeholder="Usuário" class="w-full border-2 p-4 rounded-2xl mb-4 outline-none focus:border-indigo-500 transition">
-            <input type="password" id="login-pass" placeholder="Senha" class="w-full border-2 p-4 rounded-2xl mb-8 outline-none focus:border-indigo-500 transition">
-            <button onclick="tentarLogin()" class="w-full bg-indigo-600 text-white font-black p-5 rounded-2xl hover:bg-indigo-700 transition shadow-xl shadow-indigo-200">ENTRAR NO ERP</button>
+        <div class="bg-white p-10 rounded-[3rem] shadow-2xl w-full max-w-md border-t-8 border-indigo-500 text-center">
+            <h2 class="text-3xl font-black text-slate-900 mb-2">SISTEMA RH</h2>
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-8">Acesso Administrativo</p>
+            <input type="text" id="login-user" placeholder="Usuário" class="w-full border-2 p-4 rounded-2xl mb-4 outline-none focus:border-indigo-500">
+            <input type="password" id="login-pass" placeholder="Senha" class="w-full border-2 p-4 rounded-2xl mb-8 outline-none focus:border-indigo-500">
+            <button onclick="tentarLogin()" class="w-full bg-indigo-600 text-white font-black p-5 rounded-2xl hover:bg-indigo-700 transition">ENTRAR</button>
         </div>
     </div>
 
     <div id="conteudo-sistema" class="hidden">
         <nav class="bg-white shadow-sm sticky top-0 z-50 border-b">
             <div class="max-w-7xl mx-auto flex justify-between items-center p-5">
-                <div class="flex items-center gap-3">
-                    <div class="bg-indigo-600 text-white p-2 rounded-xl font-black italic">RH</div>
-                    <h1 class="font-black text-xl tracking-tighter uppercase text-slate-800">Master<span class="text-indigo-600">Core</span></h1>
-                </div>
-                <div class="flex gap-8 text-xs font-black uppercase text-slate-500">
-                    <button onclick="mudarAba('aba-home')" class="hover:text-indigo-600">Dashboard</button>
-                    <button onclick="mudarAba('aba-equipe')" class="hover:text-indigo-600">Colaboradores</button>
-                    <button onclick="mudarAba('aba-financeiro')" class="text-indigo-600 border-b-2 border-indigo-600 pb-1">Folha Mensal</button>
+                <h1 class="font-black text-xl tracking-tighter uppercase">RH<span class="text-indigo-600">_MASTER</span></h1>
+                <div class="flex gap-8 text-[10px] font-black uppercase text-slate-500">
+                    <button onclick="mudarAba('aba-home')">Painel</button>
+                    <button onclick="mudarAba('aba-equipe')">Colaboradores</button>
+                    <button onclick="mudarAba('aba-financeiro')">Folha de Pagamento</button>
                     <button onclick="logout()" class="text-rose-500">Sair</button>
                 </div>
             </div>
         </nav>
 
-        <main class="max-w-7xl mx-auto p-6 mt-4 pb-24">
+        <main class="max-w-7xl mx-auto p-6 mt-4">
             
             <section id="aba-home" class="aba-item">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                    <div class="bg-white p-8 rounded-[2rem] shadow-sm border-b-4 border-indigo-500">
-                        <p class="text-slate-400 text-[10px] font-black uppercase">Folha Bruta</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm">
+                        <p class="text-slate-400 text-[10px] font-black uppercase">Folha Mensal Bruta</p>
                         <p id="d-custo" class="text-3xl font-black">R$ 0,00</p>
                     </div>
-                    <div class="bg-white p-8 rounded-[2rem] shadow-sm border-b-4 border-emerald-500">
-                        <p class="text-slate-400 text-[10px] font-black uppercase">Custo Real (Encargos)</p>
-                        <p id="d-custo-real" class="text-3xl font-black text-emerald-600">R$ 0,00</p>
-                    </div>
-                    <div class="bg-white p-8 rounded-[2rem] shadow-sm">
-                        <p class="text-slate-400 text-[10px] font-black uppercase">Ativos</p>
+                    <div class="bg-white p-8 rounded-3xl shadow-sm">
+                        <p class="text-slate-400 text-[10px] font-black uppercase">Colaboradores</p>
                         <p id="d-ativos" class="text-3xl font-black">0</p>
                     </div>
-                    <div class="bg-white p-8 rounded-[2rem] shadow-sm">
-                        <p class="text-slate-400 text-[10px] font-black uppercase">Média Líquida</p>
-                        <p id="d-media" class="text-3xl font-black text-indigo-600">R$ 0</p>
+                    <div class="bg-white p-8 rounded-3xl shadow-sm">
+                        <p class="text-slate-400 text-[10px] font-black uppercase">Encargos (FGTS)</p>
+                        <p id="d-fgts" class="text-3xl font-black text-indigo-600">R$ 0,00</p>
                     </div>
                 </div>
-                <div class="bg-white p-10 rounded-[3rem] shadow-sm border"><canvas id="graficoFolha" height="80"></canvas></div>
+                <div class="bg-white p-10 rounded-[2rem] shadow-sm border"><canvas id="graficoFolha" height="80"></canvas></div>
             </section>
 
             <section id="aba-equipe" class="aba-item hidden">
-                <div class="bg-white rounded-[2.5rem] shadow-sm border overflow-hidden">
-                    <div class="p-8 border-b flex justify-between items-center bg-slate-50/50">
-                        <h2 class="font-black text-2xl uppercase tracking-tighter">Quadro de Funcionários</h2>
-                        <button onclick="abrirModal()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black hover:scale-105 transition shadow-lg shadow-indigo-100">+ ADMITIR NOVO</button>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-black uppercase tracking-tighter">Gestão de Equipe</h2>
+                    <button onclick="abrirModal()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black shadow-lg shadow-indigo-100">+ NOVO CADASTRO (RDP)</button>
+                </div>
+                <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden">
+                    <div class="p-6 bg-slate-50 border-b flex gap-4">
+                        <input type="text" id="buscaFunc" onkeyup="renderEquipe()" placeholder="Buscar por nome ou cargo..." class="flex-1 p-3 rounded-xl border outline-none focus:border-indigo-500">
                     </div>
                     <table class="w-full text-left">
                         <thead class="bg-white text-[10px] font-black text-slate-400 uppercase border-b">
                             <tr>
-                                <th class="p-6">Funcionário</th>
-                                <th class="p-6">Departamento</th>
-                                <th class="p-6">Salário Base</th>
+                                <th class="p-6">Funcionário / Cargo</th>
+                                <th class="p-6">CPF / E-mail</th>
+                                <th class="p-6">Contrato</th>
                                 <th class="p-6 text-right">Ações</th>
                             </tr>
                         </thead>
@@ -81,73 +77,95 @@
             </section>
 
             <section id="aba-financeiro" class="aba-item hidden">
-                <div class="mb-8 flex flex-col md:flex-row justify-between items-end gap-4">
-                    <div>
-                        <h2 class="text-3xl font-black tracking-tighter">Processamento de Salários</h2>
-                        <p class="text-slate-500 font-bold uppercase text-[10px]">Competência: Março / 2026</p>
-                    </div>
-                    <div class="bg-white p-2 rounded-2xl border flex gap-2">
-                        <button class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-black text-[10px] uppercase">Fechar Folha</button>
-                        <button onclick="window.print()" class="px-6 py-2 font-black text-[10px] uppercase text-slate-500">Imprimir Relatório</button>
-                    </div>
-                </div>
-                <div id="grid-financeiro" class="grid grid-cols-1 lg:grid-cols-2 gap-8"></div>
+                <div id="grid-financeiro" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
             </section>
         </main>
     </div>
 
-    <div id="modal-cadastro" class="fixed inset-0 z-[110] bg-slate-900/90 hidden flex items-center justify-center p-4 backdrop-blur-lg">
-        <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-            <div class="p-8 bg-indigo-600 text-white flex justify-between items-center">
-                <h3 class="font-black text-2xl uppercase tracking-tighter">Formulário de Admissão</h3>
-                <button onclick="fecharModal()" class="bg-white/20 w-10 h-10 rounded-full font-bold">✕</button>
+    <div id="modal-cadastro" class="fixed inset-0 z-[110] bg-slate-900/90 hidden flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white w-full max-w-5xl rounded-[3rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="p-6 bg-indigo-600 text-white flex justify-between items-center">
+                <h3 class="font-black text-xl uppercase tracking-widest">Ficha Cadastral do Colaborador</h3>
+                <button onclick="fecharModal()" class="text-white font-bold">FECHAR X</button>
             </div>
             
-            <form id="formFunc" class="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 overflow-y-auto">
-                <div class="md:col-span-2 space-y-4">
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Nome Completo</label>
-                    <input type="text" id="f-nome" required class="w-full border-2 p-4 rounded-2xl outline-none focus:border-indigo-500 bg-slate-50">
+            <form id="formFunc" class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-y-auto bg-slate-50">
+                <div class="md:col-span-3 font-black text-indigo-600 text-xs uppercase border-b pb-2 mb-2">1. Informações Pessoais</div>
+                <div class="md:col-span-2">
+                    <label class="text-[9px] font-black uppercase text-slate-400">Nome Completo *</label>
+                    <input type="text" id="f-nome" required class="w-full p-3 rounded-xl border-2 outline-none">
                 </div>
-                <div class="space-y-4">
-                    <label class="text-[10px] font-black text-slate-400 uppercase">CPF</label>
-                    <input type="text" id="f-cpf" required placeholder="000.000.000-00" class="w-full border-2 p-4 rounded-2xl outline-none bg-slate-50">
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">Data de Nascimento *</label>
+                    <input type="date" id="f-nasc" required class="w-full p-3 rounded-xl border-2 outline-none">
                 </div>
-                
-                <div class="bg-indigo-50 p-8 rounded-[2rem] md:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="md:col-span-4 font-black text-indigo-900 text-xs uppercase border-b border-indigo-200 pb-2">Contrato e Remuneração</div>
-                    <div class="md:col-span-2">
-                        <label class="text-[10px] font-bold text-indigo-400 uppercase">Salário Bruto Mensal</label>
-                        <input type="number" id="f-salario" required class="w-full border-2 p-4 rounded-2xl outline-none">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-indigo-400 uppercase">Dependentes</label>
-                        <input type="number" id="f-dep" value="0" class="w-full border-2 p-4 rounded-2xl outline-none">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-indigo-400 uppercase">Vale Transporte</label>
-                        <select id="f-vt" class="w-full border-2 p-4 rounded-2xl outline-none">
-                            <option value="sim">Sim (Desc. 6%)</option>
-                            <option value="nao">Não Optante</option>
-                        </select>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">CPF *</label>
+                    <input type="text" id="f-cpf" required placeholder="000.000.000-00" class="w-full p-3 rounded-xl border-2 outline-none">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">RG</label>
+                    <input type="text" id="f-rg" class="w-full p-3 rounded-xl border-2 outline-none">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">Sexo / Estado Civil *</label>
+                    <div class="flex gap-2">
+                        <select id="f-sexo" class="w-full p-3 rounded-xl border-2"><option>Masculino</option><option>Feminino</option><option>Outro</option></select>
+                        <select id="f-civil" class="w-full p-3 rounded-xl border-2"><option>Solteiro(a)</option><option>Casado(a)</option><option>Divorciado(a)</option></select>
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Cargo</label>
-                    <input type="text" id="f-cargo" required class="w-full border-2 p-4 rounded-2xl outline-none bg-slate-50">
+                <div class="md:col-span-3 font-black text-indigo-600 text-xs uppercase border-b pb-2 mt-4">2. Endereço e Contato</div>
+                <div class="md:col-span-2">
+                    <label class="text-[9px] font-black uppercase text-slate-400">Rua / Logradouro *</label>
+                    <input type="text" id="f-rua" required class="w-full p-3 rounded-xl border-2 outline-none">
                 </div>
-                <div class="space-y-4">
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Horas Extras Mensais (Estimadas)</label>
-                    <input type="number" id="f-he" value="0" class="w-full border-2 p-4 rounded-2xl outline-none bg-slate-50">
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">Número / Bairro *</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="f-num" placeholder="Nº" class="w-1/3 p-3 rounded-xl border-2 outline-none">
+                        <input type="text" id="f-bairro" placeholder="Bairro" class="w-2/3 p-3 rounded-xl border-2 outline-none">
+                    </div>
                 </div>
-                <div class="space-y-4">
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Faltas (Dias)</label>
-                    <input type="number" id="f-faltas" value="0" class="w-full border-2 p-4 rounded-2xl outline-none bg-slate-50">
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">CEP *</label>
+                    <input type="text" id="f-cep" class="w-full p-3 rounded-xl border-2 outline-none">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">E-mail *</label>
+                    <input type="email" id="f-email" required class="w-full p-3 rounded-xl border-2 outline-none">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">Telefone *</label>
+                    <input type="text" id="f-tel" required class="w-full p-3 rounded-xl border-2 outline-none">
+                </div>
+
+                <div class="md:col-span-3 font-black text-indigo-600 text-xs uppercase border-b pb-2 mt-4">3. Dados Profissionais</div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">Cargo / Departamento *</label>
+                    <input type="text" id="f-cargo" required class="w-full p-3 rounded-xl border-2 outline-none">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">Salário Bruto *</label>
+                    <input type="number" id="f-salario" required class="w-full p-3 rounded-xl border-2 outline-none">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-400">Data de Admissão *</label>
+                    <input type="date" id="f-adm" required class="w-full p-3 rounded-xl border-2 outline-none">
+                </div>
+
+                <div class="md:col-span-3 bg-white p-6 rounded-2xl border-2 border-dashed border-indigo-200 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-4 text-[10px] font-black text-indigo-400 uppercase">Variáveis Mensais (Folha)</div>
+                    <div><label class="text-[9px] font-bold">H. Extras (Qtd)</label><input type="number" id="f-he" value="0" class="w-full p-2 rounded border"></div>
+                    <div><label class="text-[9px] font-bold">Faltas (Dias)</label><input type="number" id="f-faltas" value="0" class="w-full p-2 rounded border"></div>
+                    <div><label class="text-[9px] font-bold">Vale Transp.</label><select id="f-vt" class="w-full p-2 rounded border"><option value="sim">Sim</option><option value="nao">Não</option></select></div>
+                    <div><label class="text-[9px] font-bold">Nº Dependentes</label><input type="number" id="f-dep" value="0" class="w-full p-2 rounded border"></div>
                 </div>
             </form>
 
-            <div class="p-8 bg-slate-50 border-t flex gap-4">
-                <button type="button" onclick="salvar()" class="flex-1 bg-indigo-600 text-white font-black p-5 rounded-2xl hover:bg-indigo-700 transition shadow-lg">FINALIZAR ADMISSÃO</button>
+            <div class="p-6 bg-white border-t flex gap-4">
+                <button onclick="salvar()" class="flex-1 bg-indigo-600 text-white font-black p-4 rounded-2xl shadow-lg">SALVAR NO SISTEMA</button>
+                <button onclick="document.getElementById('formFunc').reset()" class="px-6 font-bold text-slate-400 uppercase text-xs">Limpar</button>
             </div>
         </div>
     </div>
@@ -157,18 +175,16 @@
         let idEdicao = null;
 
         function tentarLogin() {
-            const u = document.getElementById('login-user').value;
-            const p = document.getElementById('login-pass').value;
-            if(u === 'admin' && p === '1234') {
+            if(document.getElementById('login-user').value === 'admin' && document.getElementById('login-pass').value === '1234') {
                 document.getElementById('tela-login').classList.add('hidden');
                 document.getElementById('conteudo-sistema').classList.remove('hidden');
                 atualizarTudo();
-            } else { alert("Acesso Inválido!"); }
+            } else alert("Acesso Negado!");
         }
 
         function logout() { location.reload(); }
 
-        const getBD = () => JSON.parse(localStorage.getItem('RH_CORE_V2')) || [];
+        const getBD = () => JSON.parse(localStorage.getItem('RH_RDP_V1')) || [];
         
         function mudarAba(id) {
             document.querySelectorAll('.aba-item').forEach(a => a.classList.add('hidden'));
@@ -179,29 +195,22 @@
         function abrirModal() { idEdicao = null; document.getElementById('formFunc').reset(); document.getElementById('modal-cadastro').classList.remove('hidden'); }
         function fecharModal() { document.getElementById('modal-cadastro').classList.add('hidden'); }
 
-        // --- MOTOR DE CÁLCULO TRABALHISTA (IRRF + INSS + FGTS) ---
-        function calcularFolhaTotal(f) {
-            const salarioBase = f.salario;
-            
-            // 1. Horas Extras (Cálculo simplificado: Valor Hora * 1.5)
-            const valorHora = salarioBase / 220;
-            const proventoHE = f.he * (valorHora * 1.5);
-            
-            // 2. Faltas
-            const descontoFaltas = (salarioBase / 30) * f.faltas;
-            
-            const baseCalculo = salarioBase + proventoHE - descontoFaltas;
+        // --- MOTOR DE CÁLCULO TRABALHISTA ---
+        function calcularFolha(f) {
+            const bruto = f.salario;
+            const valorHora = bruto / 220;
+            const vHE = f.he * (valorHora * 1.5);
+            const vFaltas = (bruto / 30) * f.faltas;
+            const base = bruto + vHE - vFaltas;
 
-            // 3. INSS 2026 (Estimado)
             let inss = 0;
-            if (baseCalculo <= 1412) inss = baseCalculo * 0.075;
-            else if (baseCalculo <= 2666) inss = baseCalculo * 0.09;
-            else if (baseCalculo <= 4000) inss = baseCalculo * 0.12;
-            else inss = baseCalculo * 0.14;
-            if(inss > 900) inss = 908;
+            if (base <= 1412) inss = base * 0.075;
+            else if (base <= 2666) inss = base * 0.09;
+            else if (base <= 4000) inss = base * 0.12;
+            else inss = base * 0.14;
+            if(inss > 908) inss = 908;
 
-            // 4. IRRF (Com dedução por dependente)
-            const baseIRRF = baseCalculo - inss - (f.dep * 189.59);
+            const baseIRRF = base - inss - (f.dep * 189.59);
             let irrf = 0;
             if (baseIRRF > 2259) {
                 if (baseIRRF <= 2826) irrf = (baseIRRF * 0.075) - 169;
@@ -209,34 +218,43 @@
                 else irrf = (baseIRRF * 0.275) - 896;
             }
 
-            const vt = f.vt === 'sim' ? salarioBase * 0.06 : 0;
-            const fgts = baseCalculo * 0.08;
-            const liquido = baseCalculo - inss - irrf - vt;
+            const vt = f.vt === 'sim' ? bruto * 0.06 : 0;
+            const fgts = base * 0.08;
+            const liquido = base - inss - irrf - vt;
 
-            return { inss, irrf, vt, fgts, liquido, baseCalculo, proventoHE, descontoFaltas };
+            return { inss, irrf, vt, fgts, liquido, base, vHE, vFaltas };
         }
 
-        // --- OPERAÇÕES ---
+        // --- CRUD ---
         function salvar() {
             const bd = getBD();
             const f = {
                 id: idEdicao || Date.now(),
                 nome: document.getElementById('f-nome').value,
                 cpf: document.getElementById('f-cpf').value,
+                nasc: document.getElementById('f-nasc').value,
+                email: document.getElementById('f-email').value,
                 salario: parseFloat(document.getElementById('f-salario').value),
-                vt: document.getElementById('f-vt').value,
-                dep: parseInt(document.getElementById('f-dep').value),
                 cargo: document.getElementById('f-cargo').value,
                 he: parseFloat(document.getElementById('f-he').value || 0),
-                faltas: parseInt(document.getElementById('f-faltas').value || 0)
+                faltas: parseInt(document.getElementById('f-faltas').value || 0),
+                vt: document.getElementById('f-vt').value,
+                dep: parseInt(document.getElementById('f-dep').value || 0)
             };
 
-            if(idEdicao) {
-                const i = bd.findIndex(x => x.id === idEdicao);
-                bd[i] = f;
-            } else { bd.push(f); }
+            // Validações RDP
+            if(!f.nome || !f.cpf || !f.salario || !f.nasc) return alert("Preencha todos os campos obrigatórios (*)");
+            if(new Date(f.nasc) > new Date()) return alert("Data de nascimento inválida!");
 
-            localStorage.setItem('RH_CORE_V2', JSON.stringify(bd));
+            if(idEdicao) {
+                const idx = bd.findIndex(x => x.id === idEdicao);
+                bd[idx] = f;
+            } else {
+                if(bd.some(x => x.cpf === f.cpf)) return alert("CPF já cadastrado!");
+                bd.push(f);
+            }
+
+            localStorage.setItem('RH_RDP_V1', JSON.stringify(bd));
             fecharModal();
             atualizarTudo();
         }
@@ -245,24 +263,26 @@
             const f = getBD().find(x => x.id === id);
             idEdicao = id;
             document.getElementById('f-nome').value = f.nome;
+            document.getElementById('f-cpf').value = f.cpf;
             document.getElementById('f-salario').value = f.salario;
-            document.getElementById('f-he').value = f.he;
-            document.getElementById('f-faltas').value = f.faltas;
+            document.getElementById('f-cargo').value = f.cargo;
             document.getElementById('modal-cadastro').classList.remove('hidden');
         }
 
-        function excluir(id) { if(confirm("Deseja desligar este funcionário?")) { localStorage.setItem('RH_CORE_V2', JSON.stringify(getBD().filter(x => x.id !== id))); atualizarTudo(); } }
+        function excluir(id) { if(confirm("Confirmar exclusão?")) { localStorage.setItem('RH_RDP_V1', JSON.stringify(getBD().filter(x => x.id !== id))); atualizarTudo(); } }
 
         // --- RENDERS ---
         function atualizarTudo() { renderEquipe(); renderFinanceiro(); renderDash(); }
 
         function renderEquipe() {
-            document.getElementById('lista-equipe').innerHTML = getBD().map(f => `
+            const busca = document.getElementById('buscaFunc').value.toLowerCase();
+            const bd = getBD().filter(x => x.nome.toLowerCase().includes(busca) || x.cargo.toLowerCase().includes(busca));
+            document.getElementById('lista-equipe').innerHTML = bd.map(f => `
                 <tr class="hover:bg-slate-50">
-                    <td class="p-6 font-black text-slate-800 uppercase">${f.nome}</td>
-                    <td class="p-6 text-xs font-bold text-slate-400 uppercase">${f.cargo}</td>
-                    <td class="p-6 font-bold">R$ ${f.salario.toFixed(2)}</td>
-                    <td class="p-6 text-right space-x-4">
+                    <td class="p-6"><p class="font-black text-slate-800 uppercase">${f.nome}</p><p class="text-[10px] text-slate-400 font-bold">${f.cargo}</p></td>
+                    <td class="p-6 text-xs text-slate-500">${f.cpf}<br>${f.email}</td>
+                    <td class="p-6"><span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black uppercase">Ativo</span></td>
+                    <td class="p-6 text-right space-x-2">
                         <button onclick="editar(${f.id})" class="text-indigo-600 font-black text-[10px]">EDITAR</button>
                         <button onclick="excluir(${f.id})" class="text-rose-500 font-black text-[10px]">EXCLUIR</button>
                     </td>
@@ -272,33 +292,22 @@
 
         function renderFinanceiro() {
             document.getElementById('grid-financeiro').innerHTML = getBD().map(f => {
-                const c = calcularFolhaTotal(f);
+                const c = calcularFolha(f);
                 return `
-                    <div class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 bg-slate-50 font-black text-[10px] text-slate-300">#${f.id.toString().slice(-4)}</div>
-                        <h3 class="text-xl font-black mb-1 uppercase">${f.nome}</h3>
-                        <p class="text-indigo-500 font-bold text-[10px] uppercase mb-8">${f.cargo}</p>
-                        
-                        <div class="grid grid-cols-2 gap-8 mb-8">
-                            <div class="space-y-2">
-                                <p class="text-[9px] font-black text-slate-400 uppercase">Vencimentos</p>
-                                <div class="flex justify-between text-xs"><span>Salário</span> <span>R$ ${f.salario.toFixed(2)}</span></div>
-                                <div class="flex justify-between text-xs text-emerald-600"><span>H.E. (50%)</span> <span>+ R$ ${c.proventoHE.toFixed(2)}</span></div>
-                            </div>
-                            <div class="space-y-2">
-                                <p class="text-[9px] font-black text-rose-400 uppercase">Descontos</p>
-                                <div class="flex justify-between text-xs text-rose-500"><span>INSS</span> <span>- R$ ${c.inss.toFixed(2)}</span></div>
-                                <div class="flex justify-between text-xs text-rose-500"><span>IRRF</span> <span>- R$ ${c.irrf.toFixed(2)}</span></div>
-                                <div class="flex justify-between text-xs text-rose-500"><span>Faltas</span> <span>- R$ ${c.descontoFaltas.toFixed(2)}</span></div>
-                            </div>
+                    <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-start mb-6 border-b pb-4">
+                            <h3 class="font-black text-slate-800 uppercase leading-none">${f.nome}<br><span class="text-[10px] text-indigo-500 font-bold">${f.cargo}</span></h3>
+                            <button class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase">Recibo PDF</button>
                         </div>
-
-                        <div class="pt-6 border-t flex justify-between items-center">
-                            <div>
-                                <p class="text-[10px] font-black text-slate-400 uppercase leading-none">Líquido a Receber</p>
-                                <p class="text-3xl font-black text-indigo-600 tracking-tighter mt-1">R$ ${c.liquido.toFixed(2)}</p>
-                            </div>
-                            <button class="bg-slate-900 text-white p-4 rounded-2xl font-black text-[10px] uppercase hover:bg-black">Recibo</button>
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between text-xs"><span>Salário Base</span> <span class="font-bold">R$ ${f.salario.toFixed(2)}</span></div>
+                            <div class="flex justify-between text-xs text-emerald-600"><span>Horas Extras</span> <span>+ R$ ${c.vHE.toFixed(2)}</span></div>
+                            <div class="flex justify-between text-xs text-rose-500"><span>Desc. INSS/IRRF</span> <span>- R$ ${(c.inss + c.irrf).toFixed(2)}</span></div>
+                            <div class="flex justify-between text-xs text-rose-500"><span>Desc. Faltas/VT</span> <span>- R$ ${(c.vFaltas + c.vt).toFixed(2)}</span></div>
+                        </div>
+                        <div class="bg-indigo-50 p-4 rounded-2xl flex justify-between items-center">
+                            <span class="text-[10px] font-black text-indigo-400 uppercase">Líquido</span>
+                            <span class="text-2xl font-black text-indigo-700">R$ ${c.liquido.toFixed(2)}</span>
                         </div>
                     </div>
                 `;
@@ -307,26 +316,23 @@
 
         function renderDash() {
             const bd = getBD();
-            let bruto = 0, real = 0, liqTotal = 0;
+            let bruto = 0, fgts = 0;
             bd.forEach(f => {
-                const c = calcularFolhaTotal(f);
+                const c = calcularFolha(f);
                 bruto += f.salario;
-                real += (f.salario + c.fgts + (f.salario/12) * 2); // Custo com Provisões (Férias/13)
-                liqTotal += c.liquido;
+                fgts += c.fgts;
             });
-
             document.getElementById('d-custo').innerText = `R$ ${bruto.toLocaleString()}`;
-            document.getElementById('d-custo-real').innerText = `R$ ${real.toLocaleString()}`;
+            document.getElementById('d-fgts').innerText = `R$ ${fgts.toLocaleString()}`;
             document.getElementById('d-ativos').innerText = bd.length;
-            document.getElementById('d-media').innerText = `R$ ${(bd.length ? liqTotal/bd.length : 0).toLocaleString()}`;
 
             const ctx = document.getElementById('graficoFolha').getContext('2d');
             if(meuGrafico) meuGrafico.destroy();
             meuGrafico = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: bd.map(f => f.nome.split(' ')[0]),
-                    datasets: [{ label: 'Salário Líquido', data: bd.map(f => calcularFolhaTotal(f).liquido), borderColor: '#6366f1', fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)', tension: 0.4 }]
+                    datasets: [{ label: 'Salário Base', data: bd.map(f => f.salario), backgroundColor: '#6366f1', borderRadius: 8 }]
                 }
             });
         }
