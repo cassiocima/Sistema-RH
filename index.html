@@ -3,395 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RH Master - Sistema Profissional</title>
+    <title>RH Master - Payroll Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-100 min-h-screen font-sans text-slate-900">
+<body class="bg-slate-50 min-h-screen text-slate-900">
 
-    <div id="tela-login" class="fixed inset-0 z-[100] bg-indigo-900 flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-[2rem] shadow-2xl w-full max-w-md">
-            <h2 class="text-2xl font-black text-center mb-6">Acesso RH</h2>
-            <input type="text" id="login-user" placeholder="Usuário (admin)" class="w-full border p-4 rounded-xl mb-4 outline-none">
-            <input type="password" id="login-pass" placeholder="Senha (1234)" class="w-full border p-4 rounded-xl mb-6 outline-none">
-            <button onclick="tentarLogin()" class="w-full bg-indigo-600 text-white font-black p-4 rounded-xl hover:bg-indigo-700 transition">ENTRAR</button>
+    <div id="tela-login" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-md">
+            <h2 class="text-2xl font-black text-center mb-6 text-indigo-900">RH_PAYROLL</h2>
+            <input type="text" id="login-user" placeholder="Usuário" class="w-full border p-4 rounded-xl mb-4 outline-none focus:ring-2 ring-indigo-500">
+            <input type="password" id="login-pass" placeholder="Senha" class="w-full border p-4 rounded-xl mb-6 outline-none focus:ring-2 ring-indigo-500">
+            <button onclick="tentarLogin()" class="w-full bg-indigo-600 text-white font-black p-4 rounded-xl hover:bg-indigo-700 transition">ACESSAR PAINEL</button>
         </div>
     </div>
 
     <div id="conteudo-sistema" class="hidden">
-        <nav class="bg-slate-900 text-white shadow-xl sticky top-0 z-50 border-b-4 border-indigo-600">
+        <nav class="bg-slate-900 text-white shadow-xl sticky top-0 z-50">
             <div class="max-w-7xl mx-auto flex justify-between items-center p-4">
-                <h1 id="nav-empresa" class="font-black text-xl tracking-tighter uppercase text-indigo-400">CORPORATE RH</h1>
-                <div class="flex gap-4 text-[10px] font-black uppercase overflow-x-auto">
-                    <button onclick="mudarAba('aba-home')" class="hover:text-indigo-300">Painel</button>
-                    <button onclick="mudarAba('aba-equipe')" class="hover:text-indigo-300">Colaboradores</button>
-                    <button onclick="mudarAba('aba-financeiro')" class="hover:text-indigo-300">Financeiro</button>
-                    <button onclick="logout()" class="text-rose-400 border-l border-slate-700 pl-4">Sair</button>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-8 bg-indigo-500 rounded-full"></div>
+                    <h1 class="font-black text-xl tracking-tighter uppercase">RH_PRO</h1>
+                </div>
+                <div class="flex gap-6 text-[10px] font-black uppercase">
+                    <button onclick="mudarAba('aba-home')">Dashboard</button>
+                    <button onclick="mudarAba('aba-equipe')">Funcionários</button>
+                    <button onclick="mudarAba('aba-financeiro')" class="text-indigo-400">Folha de Pagamento</button>
+                    <button onclick="logout()" class="text-rose-400">Sair</button>
                 </div>
             </div>
         </nav>
 
-        <main class="max-w-7xl mx-auto p-4 mt-6 pb-20">
+        <main class="max-w-7xl mx-auto p-4 mt-8 pb-20">
             
             <section id="aba-home" class="aba-item">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                     <div class="bg-white p-6 rounded-3xl shadow-sm border">
-                        <p class="text-slate-400 text-xs font-bold uppercase">Folha Mensal</p>
-                        <p id="d-custo" class="text-3xl font-black">R$ 0,00</p>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase">Custo Total Folha</p>
+                        <p id="d-custo" class="text-2xl font-black text-slate-800">R$ 0,00</p>
                     </div>
                     <div class="bg-white p-6 rounded-3xl shadow-sm border">
-                        <p class="text-slate-400 text-xs font-bold uppercase">Total Equipe</p>
-                        <p id="d-ativos" class="text-3xl font-black">0</p>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase">Total Provisões FGTS</p>
+                        <p id="d-fgts" class="text-2xl font-black text-indigo-600">R$ 0,00</p>
                     </div>
                     <div class="bg-white p-6 rounded-3xl shadow-sm border">
-                        <p class="text-slate-400 text-xs font-bold uppercase">Média Salarial</p>
-                        <p id="d-media" class="text-3xl font-black">R$ 0,00</p>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase">Colaboradores</p>
+                        <p id="d-ativos" class="text-2xl font-black text-slate-800">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border">
+                        <p class="text-slate-400 text-[10px] font-bold uppercase">Média Salarial</p>
+                        <p id="d-media" class="text-2xl font-black text-slate-800">R$ 0</p>
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border"><canvas id="graficoPrincipal"></canvas></div>
+                <div class="bg-white p-8 rounded-3xl shadow-sm border max-w-4xl mx-auto">
+                    <canvas id="graficoFolha" height="100"></canvas>
+                </div>
             </section>
 
             <section id="aba-equipe" class="aba-item hidden">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-black">Gestão de Colaboradores</h2>
-                    <button onclick="abrirModalCadastro()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black shadow-lg shadow-indigo-200">+ NOVO FUNCIONÁRIO</button>
+                    <h2 class="text-xl font-black uppercase tracking-tight">Gestão de Pessoas</h2>
+                    <button onclick="abrirModal()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">+ CADASTRAR FUNCIONÁRIO</button>
                 </div>
-
-                <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
-                    <div class="p-4 bg-slate-50 border-b flex gap-4">
-                        <input type="text" id="buscaFunc" onkeyup="buscarFunc()" placeholder="Buscar por nome ou cargo..." class="flex-1 p-2 rounded-lg border outline-none">
-                    </div>
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase">
+                <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase border-b">
                             <tr>
-                                <th class="p-4">Nome</th>
-                                <th class="p-4">Cargo / Departamento</th>
-                                <th class="p-4">Status</th>
-                                <th class="p-4 text-right">Ações</th>
+                                <th class="p-5">Nome / Cargo</th>
+                                <th class="p-5">CPF</th>
+                                <th class="p-5">Salário Base</th>
+                                <th class="p-5 text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="lista-equipe" class="text-sm"></tbody>
+                        <tbody id="lista-equipe" class="text-sm divide-y"></tbody>
                     </table>
                 </div>
             </section>
 
             <section id="aba-financeiro" class="aba-item hidden">
-                <div id="grid-financeiro" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-xl font-black uppercase">Processamento de Folha</h2>
+                    <span class="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full font-bold text-xs">Mês de Referência: Março/2026</span>
+                </div>
+                <div id="grid-financeiro" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </section>
         </main>
     </div>
 
-    <div id="modal-cadastro" class="fixed inset-0 z-[110] bg-slate-900/80 hidden flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
-        <div class="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden my-auto">
+    <div id="modal-cadastro" class="fixed inset-0 z-[110] bg-slate-900/90 hidden flex items-center justify-center p-4 backdrop-blur-md overflow-y-auto">
+        <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl overflow-hidden my-auto">
             <div class="p-6 bg-slate-50 border-b flex justify-between items-center">
-                <h3 class="font-black text-xl uppercase tracking-tighter" id="titulo-modal">Novo Cadastro</h3>
-                <button onclick="fecharModalCadastro()" class="text-slate-400 hover:text-rose-500 font-bold">FECHAR</button>
+                <h3 class="font-black text-xl text-indigo-900 uppercase">Ficha Cadastral de Funcionário</h3>
+                <button onclick="fecharModal()" class="text-slate-400 hover:text-rose-500 font-bold">X</button>
             </div>
             
-            <form id="formCompleto" class="p-8 space-y-8 max-h-[70vh] overflow-y-auto">
+            <form id="formFunc" class="p-10 grid grid-cols-1 md:grid-cols-3 gap-6 max-h-[70vh] overflow-y-auto">
+                <div class="md:col-span-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase">Nome Completo</label>
+                    <input type="text" id="f-nome" required class="w-full border-2 p-3 rounded-xl outline-none focus:border-indigo-500">
+                </div>
                 <div>
-                    <h4 class="text-indigo-600 font-black text-xs uppercase mb-4 border-b pb-2">1. Informações Pessoais</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">Nome Completo *</label>
-                            <input type="text" id="f-nome" required class="w-full border-2 p-3 rounded-xl outline-none focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">Data Nascimento *</label>
-                            <input type="date" id="f-nascimento" required class="w-full border-2 p-3 rounded-xl outline-none focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">CPF *</label>
-                            <input type="text" id="f-cpf" required placeholder="000.000.000-00" class="w-full border-2 p-3 rounded-xl outline-none focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">RG</label>
-                            <input type="text" id="f-rg" class="w-full border-2 p-3 rounded-xl outline-none focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">Sexo *</label>
-                            <select id="f-sexo" required class="w-full border-2 p-3 rounded-xl outline-none">
-                                <option value="Masculino">Masculino</option>
-                                <option value="Feminino">Feminino</option>
-                                <option value="Outro">Outro</option>
-                            </select>
-                        </div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase">CPF</label>
+                    <input type="text" id="f-cpf" required placeholder="000.000.000-00" class="w-full border-2 p-3 rounded-xl outline-none">
+                </div>
+                
+                <div class="bg-indigo-50 p-6 rounded-3xl md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-3 font-black text-indigo-900 text-xs uppercase border-b border-indigo-100 mb-2 pb-2">Configuração da Folha</div>
+                    <div>
+                        <label class="text-[10px] font-bold text-indigo-400 uppercase">Salário Bruto (R$)</label>
+                        <input type="number" id="f-salario" required class="w-full border-2 p-3 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-indigo-400 uppercase">Vale Transporte (Desconto 6%)</label>
+                        <select id="f-vt" class="w-full border-2 p-3 rounded-xl">
+                            <option value="sim">Sim, utiliza</option>
+                            <option value="nao">Não utiliza</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-indigo-400 uppercase">Dependentes (IRRF)</label>
+                        <input type="number" id="f-dep" value="0" class="w-full border-2 p-3 rounded-xl">
                     </div>
                 </div>
 
                 <div>
-                    <h4 class="text-indigo-600 font-black text-xs uppercase mb-4 border-b pb-2">2. Endereço</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div class="md:col-span-3">
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">Rua *</label>
-                            <input type="text" id="f-rua" required class="w-full border-2 p-3 rounded-xl">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">Número *</label>
-                            <input type="text" id="f-num" required class="w-full border-2 p-3 rounded-xl">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">Estado *</label>
-                            <select id="f-estado" required class="w-full border-2 p-3 rounded-xl">
-                                <option value="SP">São Paulo</option>
-                                <option value="RJ">Rio de Janeiro</option>
-                                <option value="BA">Bahia</option>
-                                </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">CEP *</label>
-                            <input type="text" id="f-cep" required class="w-full border-2 p-3 rounded-xl">
-                        </div>
-                    </div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase">Cargo</label>
+                    <input type="text" id="f-cargo" required class="w-full border-2 p-3 rounded-xl">
                 </div>
-
                 <div>
-                    <h4 class="text-indigo-600 font-black text-xs uppercase mb-4 border-b pb-2">3. Profissional</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">E-mail *</label>
-                            <input type="email" id="f-email" required class="w-full border-2 p-3 rounded-xl">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">Cargo *</label>
-                            <input type="text" id="f-cargo" required class="w-full border-2 p-3 rounded-xl">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">Salário *</label>
-                            <input type="number" id="f-salario" required class="w-full border-2 p-3 rounded-xl">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">Admissão *</label>
-                            <input type="date" id="f-admissao" required class="w-full border-2 p-3 rounded-xl">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase">Contrato *</label>
-                            <select id="f-contrato" required class="w-full border-2 p-3 rounded-xl">
-                                <option value="CLT">CLT</option>
-                                <option value="PJ">PJ</option>
-                                <option value="Estágio">Estágio</option>
-                            </select>
-                        </div>
-                    </div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase">Departamento</label>
+                    <select id="f-depto" class="w-full border-2 p-3 rounded-xl">
+                        <option>Administrativo</option>
+                        <option>Operacional</option>
+                        <option>Vendas</option>
+                        <option>TI</option>
+                    </select>
                 </div>
-
                 <div>
-                    <div class="flex justify-between items-center mb-4 border-b pb-2">
-                        <h4 class="text-indigo-600 font-black text-xs uppercase">4. Dependentes</h4>
-                        <button type="button" onclick="addDependente()" class="text-indigo-600 font-black text-[10px] hover:underline">+ ADICIONAR</button>
-                    </div>
-                    <div id="lista-dependentes" class="space-y-3"></div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase">Data Admissão</label>
+                    <input type="date" id="f-adm" required class="w-full border-2 p-3 rounded-xl">
                 </div>
             </form>
 
-            <div class="p-6 bg-slate-50 border-t flex gap-4">
-                <button type="button" onclick="salvarFuncionario()" class="flex-1 bg-indigo-600 text-white font-black p-4 rounded-2xl">SALVAR FUNCIONÁRIO</button>
-                <button type="button" onclick="fecharModalCadastro()" class="bg-slate-200 text-slate-600 font-black px-8 rounded-2xl">CANCELAR</button>
-                <button type="button" onclick="document.getElementById('formCompleto').reset()" class="text-rose-500 font-bold text-xs uppercase">Limpar</button>
+            <div class="p-8 bg-slate-50 border-t flex gap-4">
+                <button type="button" onclick="salvar()" class="flex-1 bg-indigo-600 text-white font-black p-4 rounded-2xl hover:bg-indigo-700 transition">SALVAR E CALCULAR FOLHA</button>
+                <button type="button" onclick="fecharModal()" class="px-8 font-bold text-slate-400 uppercase text-xs">Cancelar</button>
             </div>
         </div>
     </div>
 
     <script>
         let meuGrafico = null;
-        let editandoID = null;
+        let idEdicao = null;
 
-        // --- LOGIN ---
+        // --- AUTH ---
         function tentarLogin() {
             const u = document.getElementById('login-user').value;
             const p = document.getElementById('login-pass').value;
             if(u === 'admin' && p === '1234') {
                 document.getElementById('tela-login').classList.add('hidden');
                 document.getElementById('conteudo-sistema').classList.remove('hidden');
-                atualizarDash();
-            } else { alert("Acesso negado"); }
+                atualizarTudo();
+            } else { alert("Acesso Inválido!"); }
         }
 
         function logout() { location.reload(); }
 
-        // --- NAVEGAÇÃO ---
+        // --- CORE ---
+        const getBD = () => JSON.parse(localStorage.getItem('RH_PAYROLL_V1')) || [];
+        
         function mudarAba(id) {
             document.querySelectorAll('.aba-item').forEach(a => a.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            if(id === 'aba-home') atualizarDash();
-            if(id === 'aba-equipe') renderEquipe();
-            if(id === 'aba-financeiro') renderFinanceiro();
+            atualizarTudo();
         }
 
-        // --- GESTÃO DE MODAL ---
-        function abrirModalCadastro() {
-            editandoID = null;
-            document.getElementById('formCompleto').reset();
-            document.getElementById('lista-dependentes').innerHTML = '';
-            document.getElementById('titulo-modal').innerText = "Novo Cadastro";
+        function abrirModal() {
+            idEdicao = null;
+            document.getElementById('formFunc').reset();
             document.getElementById('modal-cadastro').classList.remove('hidden');
         }
 
-        function fecharModalCadastro() {
-            document.getElementById('modal-cadastro').classList.add('hidden');
+        function fecharModal() { document.getElementById('modal-cadastro').classList.add('hidden'); }
+
+        // --- LÓGICA DE FOLHA (BRAZILIAN RULES) ---
+        function calcularFolha(salarioBruto, usaVT, dependentes) {
+            // 1. INSS 2024 (Tabela Simplificada para fins de projeto)
+            let inss = 0;
+            if (salarioBruto <= 1412) inss = salarioBruto * 0.075;
+            else if (salarioBruto <= 2666.68) inss = salarioBruto * 0.09;
+            else if (salarioBruto <= 4000.03) inss = salarioBruto * 0.12;
+            else inss = salarioBruto * 0.14;
+            if (inss > 908.85) inss = 908.85; // Teto INSS
+
+            // 2. Vale Transporte (6% do salário base se optar)
+            const vt = usaVT === 'sim' ? salarioBruto * 0.06 : 0;
+
+            // 3. FGTS (8% pago pela empresa - não desconta do funcionário, mas é custo)
+            const fgts = salarioBruto * 0.08;
+
+            // 4. Salário Líquido Estimado
+            const liquido = salarioBruto - inss - vt;
+
+            return { inss, vt, fgts, liquido };
         }
 
-        // --- DEPENDENTES ---
-        function addDependente(dados = null) {
-            const id = Date.now();
-            const div = document.createElement('div');
-            div.className = "grid grid-cols-1 md:grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl relative border border-dashed border-slate-200";
-            div.innerHTML = `
-                <input type="text" placeholder="Nome do Dependente" class="dep-nome p-2 rounded border text-xs" value="${dados ? dados.nome : ''}">
-                <input type="date" class="dep-nasc p-2 rounded border text-xs" value="${dados ? dados.nascimento : ''}">
-                <select class="dep-rel p-2 rounded border text-xs">
-                    <option ${dados && dados.relacao === 'Filho' ? 'selected' : ''}>Filho</option>
-                    <option ${dados && dados.relacao === 'Cônjuge' ? 'selected' : ''}>Cônjuge</option>
-                    <option ${dados && dados.relacao === 'Outro' ? 'selected' : ''}>Outro</option>
-                </select>
-                <button type="button" onclick="this.parentElement.remove()" class="absolute -right-2 -top-2 bg-rose-500 text-white w-5 h-5 rounded-full text-[10px]">X</button>
-            `;
-            document.getElementById('lista-dependentes').appendChild(div);
-        }
-
-        // --- SALVAR (INCLUIR/EDITAR) ---
-        function salvarFuncionario() {
-            const nome = document.getElementById('f-nome').value;
-            const cpf = document.getElementById('f-cpf').value;
-            const nasc = document.getElementById('f-nascimento').value;
-            const adm = document.getElementById('f-admissao').value;
-
-            // Validações Básicas (Conforme Requisito)
-            if(!nome || !cpf || !nasc || !adm) return alert("Preencha todos os campos obrigatórios (*)");
-            if(new Date(nasc) > new Date()) return alert("Data de nascimento não pode ser no futuro.");
-            if(new Date(adm) > new Date()) return alert("Data de admissão não pode ser no futuro.");
-
-            const bd = JSON.parse(localStorage.getItem('rh_master_v10')) || [];
-
-            // Validação de Unicidade (CPF/Email) apenas se for novo
-            if(!editandoID && bd.some(x => x.cpf === cpf)) return alert("CPF já cadastrado.");
-
-            // Coletar Dependentes
-            const deps = [];
-            document.querySelectorAll('#lista-dependentes > div').forEach(div => {
-                deps.push({
-                    nome: div.querySelector('.dep-nome').value,
-                    nascimento: div.querySelector('.dep-nasc').value,
-                    relacao: div.querySelector('.dep-rel').value
-                });
-            });
-
-            const dados = {
-                id: editandoID || Date.now(),
-                nome, cpf, nasc, adm,
-                rg: document.getElementById('f-rg').value,
-                sexo: document.getElementById('f-sexo').value,
-                email: document.getElementById('f-email').value,
-                cargo: document.getElementById('f-cargo').value,
+        // --- CRUD ---
+        function salvar() {
+            const bd = getBD();
+            const f = {
+                id: idEdicao || Date.now(),
+                nome: document.getElementById('f-nome').value,
+                cpf: document.getElementById('f-cpf').value,
                 salario: parseFloat(document.getElementById('f-salario').value),
-                contrato: document.getElementById('f-contrato').value,
-                rua: document.getElementById('f-rua').value,
-                num: document.getElementById('f-num').value,
-                dependentes: deps
+                vt: document.getElementById('f-vt').value,
+                dep: parseInt(document.getElementById('f-dep').value),
+                cargo: document.getElementById('f-cargo').value,
+                depto: document.getElementById('f-depto').value,
+                adm: document.getElementById('f-adm').value
             };
 
-            if(editandoID) {
-                const index = bd.findIndex(x => x.id === editandoID);
-                bd[index] = dados;
+            if(!f.nome || !f.salario) return alert("Preencha o básico!");
+
+            if(idEdicao) {
+                const i = bd.findIndex(x => x.id === idEdicao);
+                bd[i] = f;
             } else {
-                bd.push(dados);
+                bd.push(f);
             }
 
-            localStorage.setItem('rh_master_v10', JSON.stringify(bd));
-            fecharModalCadastro();
-            renderEquipe();
-            alert("Dados salvos com sucesso!");
+            localStorage.setItem('RH_PAYROLL_V1', JSON.stringify(bd));
+            fecharModal();
+            atualizarTudo();
+            alert("Processado com sucesso!");
         }
 
-        // --- CONSULTA E BUSCA ---
+        function excluir(id) {
+            if(confirm("Excluir funcionário?")) {
+                const bd = getBD().filter(x => x.id !== id);
+                localStorage.setItem('RH_PAYROLL_V1', JSON.stringify(bd));
+                atualizarTudo();
+            }
+        }
+
+        function editar(id) {
+            const bd = getBD();
+            const f = bd.find(x => x.id === id);
+            idEdicao = id;
+            document.getElementById('f-nome').value = f.nome;
+            document.getElementById('f-cpf').value = f.cpf;
+            document.getElementById('f-salario').value = f.salario;
+            document.getElementById('f-vt').value = f.vt;
+            document.getElementById('f-dep').value = f.dep;
+            document.getElementById('f-cargo').value = f.cargo;
+            document.getElementById('f-adm').value = f.adm;
+            document.getElementById('modal-cadastro').classList.remove('hidden');
+        }
+
+        // --- RENDERS ---
+        function atualizarTudo() {
+            renderEquipe();
+            renderFinanceiro();
+            renderDash();
+        }
+
         function renderEquipe() {
-            const bd = JSON.parse(localStorage.getItem('rh_master_v10')) || [];
-            const lista = document.getElementById('lista-equipe');
-            lista.innerHTML = bd.map(f => `
-                <tr class="border-b hover:bg-slate-50 transition">
-                    <td class="p-4"><p class="font-black text-slate-700 uppercase">${f.nome}</p><p class="text-[10px] text-slate-400">${f.cpf}</p></td>
-                    <td class="p-4"><p class="font-bold">${f.cargo}</p><p class="text-[10px] uppercase">${f.contrato}</p></td>
-                    <td class="p-4"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-[10px] font-black uppercase">Ativo</span></td>
-                    <td class="p-4 text-right space-x-2">
-                        <button onclick="editar(${f.id})" class="text-indigo-600 font-bold hover:underline">Editar</button>
-                        <button onclick="excluir(${f.id})" class="text-rose-500 font-bold hover:underline">Excluir</button>
+            const bd = getBD();
+            document.getElementById('lista-equipe').innerHTML = bd.map(f => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-5"><p class="font-black text-slate-800 uppercase">${f.nome}</p><p class="text-[10px] text-slate-400 font-bold uppercase">${f.cargo} | ${f.depto}</p></td>
+                    <td class="p-5 font-mono text-xs text-slate-500">${f.cpf}</td>
+                    <td class="p-5 font-bold">R$ ${f.salario.toFixed(2)}</td>
+                    <td class="p-5 text-right space-x-4">
+                        <button onclick="editar(${f.id})" class="text-indigo-600 font-black text-[10px] uppercase">Editar</button>
+                        <button onclick="excluir(${f.id})" class="text-rose-500 font-black text-[10px] uppercase">Excluir</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        function editar(id) {
-            const bd = JSON.parse(localStorage.getItem('rh_master_v10')) || [];
-            const f = bd.find(x => x.id === id);
-            if(!f) return;
-
-            editandoID = id;
-            document.getElementById('titulo-modal').innerText = "Editando: " + f.nome;
-            
-            // Preencher campos
-            document.getElementById('f-nome').value = f.nome;
-            document.getElementById('f-cpf').value = f.cpf;
-            document.getElementById('f-nascimento').value = f.nasc;
-            document.getElementById('f-email').value = f.email;
-            document.getElementById('f-cargo').value = f.cargo;
-            document.getElementById('f-salario').value = f.salario;
-            document.getElementById('f-admissao').value = f.adm;
-            document.getElementById('f-rua').value = f.rua;
-            document.getElementById('f-num').value = f.num;
-
-            // Preencher Dependentes
-            document.getElementById('lista-dependentes').innerHTML = '';
-            f.dependentes.forEach(d => addDependente(d));
-
-            document.getElementById('modal-cadastro').classList.remove('hidden');
+        function renderFinanceiro() {
+            const bd = getBD();
+            document.getElementById('grid-financeiro').innerHTML = bd.map(f => {
+                const c = calcularFolha(f.salario, f.vt, f.dep);
+                return `
+                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <h3 class="font-black text-slate-800 leading-tight uppercase">${f.nome}</h3>
+                                <span class="bg-slate-100 text-[9px] px-2 py-1 rounded font-black uppercase">Ficha #${f.id.toString().slice(-4)}</span>
+                            </div>
+                            <div class="space-y-3 border-b border-dashed pb-6">
+                                <div class="flex justify-between text-xs"><span>Salário Base</span> <span class="font-bold">R$ ${f.salario.toFixed(2)}</span></div>
+                                <div class="flex justify-between text-xs text-rose-500 font-medium"><span>Desc. INSS</span> <span>- R$ ${c.inss.toFixed(2)}</span></div>
+                                <div class="flex justify-between text-xs text-rose-500 font-medium"><span>Desc. VT</span> <span>- R$ ${c.vt.toFixed(2)}</span></div>
+                                <div class="flex justify-between text-xs text-indigo-500 font-medium"><span>Provisão FGTS (8%)</span> <span>+ R$ ${c.fgts.toFixed(2)}</span></div>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <span class="text-[10px] font-black uppercase text-slate-400">Total Líquido</span>
+                                <span class="text-2xl font-black text-indigo-600">R$ ${c.liquido.toFixed(2)}</span>
+                            </div>
+                            <button class="w-full bg-slate-900 text-white p-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition">Emitir Holerite PDF</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        function excluir(id) {
-            if(confirm("Deseja realmente excluir este colaborador?")) {
-                let bd = JSON.parse(localStorage.getItem('rh_master_v10')) || [];
-                bd = bd.filter(x => x.id !== id);
-                localStorage.setItem('rh_master_v10', JSON.stringify(bd));
-                renderEquipe();
-                atualizarDash();
-            }
-        }
+        function renderDash() {
+            const bd = getBD();
+            let totalFolha = 0;
+            let totalFGTS = 0;
 
-        // --- DASHBOARD ---
-        function atualizarDash() {
-            const bd = JSON.parse(localStorage.getItem('rh_master_v10')) || [];
-            const total = bd.reduce((acc, f) => acc + (f.salario || 0), 0);
-            
-            document.getElementById('d-custo').innerText = `R$ ${total.toFixed(2)}`;
+            bd.forEach(f => {
+                const c = calcularFolha(f.salario, f.vt, f.dep);
+                totalFolha += f.salario;
+                totalFGTS += c.fgts;
+            });
+
+            document.getElementById('d-custo').innerText = `R$ ${totalFolha.toLocaleString()}`;
+            document.getElementById('d-fgts').innerText = `R$ ${totalFGTS.toLocaleString()}`;
             document.getElementById('d-ativos').innerText = bd.length;
-            document.getElementById('d-media').innerText = `R$ ${(bd.length ? total/bd.length : 0).toFixed(2)}`;
+            document.getElementById('d-media').innerText = `R$ ${(bd.length ? totalFolha/bd.length : 0).toFixed(0)}`;
 
-            const ctx = document.getElementById('graficoPrincipal').getContext('2d');
+            const ctx = document.getElementById('graficoFolha').getContext('2d');
             if(meuGrafico) meuGrafico.destroy();
             meuGrafico = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: bd.map(f => f.nome.split(' ')[0]),
-                    datasets: [{ label: 'Salário Base', data: bd.map(f => f.salario), backgroundColor: '#6366f1', borderRadius: 8 }]
+                    datasets: [{ label: 'Salário Base', data: bd.map(f => f.salario), backgroundColor: '#6366f1', borderRadius: 12 }]
                 },
                 options: { responsive: true, plugins: { legend: { display: false } } }
             });
         }
-
-        function renderFinanceiro() {
-            const bd = JSON.parse(localStorage.getItem('rh_master_v10')) || [];
-            document.getElementById('grid-financeiro').innerHTML = bd.map(f => `
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <h3 class="font-black text-slate-800">${f.nome.toUpperCase()}</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-4">${f.cargo}</p>
-                    <p class="text-indigo-600 font-black text-xl italic mb-4 text-sm">R$ ${((f.salario || 0) * 0.89).toFixed(2)}</p>
-                    <button class="w-full bg-slate-900 text-white p-3 rounded-xl text-[10px] font-black uppercase">Gerar Recibo</button>
-                </div>
-            `).join('');
-        }
-
-        // Inicializar
-        renderEquipe();
     </script>
 </body>
 </html>
