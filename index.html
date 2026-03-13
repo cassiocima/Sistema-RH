@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RH Master ERP - RDP Compliance</title>
+    <title>RH Master ERP - Compliance Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }
+    </style>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
 
@@ -35,18 +39,22 @@
 
         <main class="max-w-7xl mx-auto p-6 mt-4">
             <section id="aba-home" class="aba-item">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-8 rounded-3xl shadow-sm">
-                        <p class="text-slate-400 text-[10px] font-black uppercase">Folha Mensal Bruta</p>
-                        <p id="d-custo" class="text-3xl font-black">R$ 0,00</p>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border-l-4 border-indigo-500">
+                        <p class="text-slate-400 text-[10px] font-black uppercase">Folha Mensal</p>
+                        <p id="d-custo" class="text-2xl font-black">R$ 0,00</p>
                     </div>
-                    <div class="bg-white p-8 rounded-3xl shadow-sm">
-                        <p class="text-slate-400 text-[10px] font-black uppercase">Colaboradores</p>
-                        <p id="d-ativos" class="text-3xl font-black">0</p>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm">
+                        <p class="text-slate-400 text-[10px] font-black uppercase">Ativos</p>
+                        <p id="d-ativos" class="text-2xl font-black">0</p>
                     </div>
-                    <div class="bg-white p-8 rounded-3xl shadow-sm">
-                        <p class="text-slate-400 text-[10px] font-black uppercase">Encargos (FGTS)</p>
-                        <p id="d-fgts" class="text-3xl font-black text-indigo-600">R$ 0,00</p>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm">
+                        <p class="text-slate-400 text-[10px] font-black uppercase">Afastados</p>
+                        <p id="d-afastados" class="text-2xl font-black text-amber-500">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm">
+                        <p class="text-slate-400 text-[10px] font-black uppercase">FGTS Total</p>
+                        <p id="d-fgts" class="text-2xl font-black text-indigo-600">R$ 0,00</p>
                     </div>
                 </div>
                 <div class="bg-white p-10 rounded-[2rem] shadow-sm border"><canvas id="graficoFolha" height="80"></canvas></div>
@@ -54,23 +62,20 @@
 
             <section id="aba-equipe" class="aba-item hidden">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-black uppercase tracking-tighter">Gestão de Equipe</h2>
-                    <button onclick="abrirModal()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black shadow-lg shadow-indigo-100">+ NOVO CADASTRO (RDP)</button>
+                    <h2 class="text-2xl font-black uppercase tracking-tighter">Gestão de Colaboradores</h2>
+                    <button onclick="abrirModal()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black shadow-lg hover:bg-indigo-700 transition">+ NOVO CADASTRO COMPLETO</button>
                 </div>
                 <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden">
-                    <div class="p-6 bg-slate-50 border-b flex gap-4">
-                        <input type="text" id="buscaFunc" onkeyup="renderEquipe()" placeholder="Buscar por nome ou cargo..." class="flex-1 p-3 rounded-xl border border-slate-200 outline-none focus:border-indigo-500">
-                    </div>
                     <table class="w-full text-left">
-                        <thead class="bg-white text-[10px] font-black text-slate-400 uppercase border-b">
+                        <thead class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase border-b">
                             <tr>
-                                <th class="p-6">Funcionário / Cargo</th>
-                                <th class="p-6">CPF / E-mail</th>
-                                <th class="p-6">Contrato</th>
+                                <th class="p-6">Colaborador</th>
+                                <th class="p-6">Status</th>
+                                <th class="p-6">Dependentes</th>
                                 <th class="p-6 text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="lista-equipe" class="divide-y text-sm text-slate-600"></tbody>
+                        <tbody id="lista-equipe" class="divide-y text-sm"></tbody>
                     </table>
                 </div>
             </section>
@@ -82,257 +87,249 @@
     </div>
 
     <div id="modal-cadastro" class="fixed inset-0 z-[110] bg-slate-900/90 hidden flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-white w-full max-w-5xl rounded-[3rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        <div class="bg-white w-full max-w-6xl rounded-[3rem] shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
             <div class="p-6 bg-indigo-600 text-white flex justify-between items-center">
-                <h3 class="font-black text-xl uppercase tracking-widest">Ficha Cadastral do Colaborador</h3>
-                <button onclick="fecharModal()" class="text-white font-bold">FECHAR X</button>
+                <h3 class="font-black text-xl uppercase tracking-widest">Dossiê do Colaborador</h3>
+                <button onclick="fecharModal()" class="hover:rotate-90 transition-all font-bold">X FECHAR</button>
+            </div>
+
+            <div class="flex bg-slate-100 px-8 border-b">
+                <button onclick="mudarTabModal('m-dados')" class="tab-btn-mod p-4 text-[10px] font-black border-b-4 border-indigo-600">DADOS PRINCIPAIS</button>
+                <button onclick="mudarTabModal('m-dependentes')" class="tab-btn-mod p-4 text-[10px] font-black border-b-4 border-transparent">DEPENDENTES</button>
+                <button onclick="mudarTabModal('m-afastamentos')" class="tab-btn-mod p-4 text-[10px] font-black border-b-4 border-transparent">AFASTAMENTOS</button>
             </div>
             
-            <form id="formFunc" class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-y-auto bg-slate-50">
-                <div class="md:col-span-3 font-black text-indigo-600 text-xs uppercase border-b pb-2 mb-2">1. Informações Pessoais</div>
-                <div class="md:col-span-2">
-                    <label class="text-[9px] font-black uppercase text-slate-400">Nome Completo *</label>
-                    <input type="text" id="f-nome" required class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">Data de Nascimento *</label>
-                    <input type="date" id="f-nasc" required class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">CPF *</label>
-                    <input type="text" id="f-cpf" required placeholder="000.000.000-00" class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">RG</label>
-                    <input type="text" id="f-rg" class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">Sexo / Estado Civil *</label>
-                    <div class="flex gap-2">
-                        <select id="f-sexo" class="w-full p-3 rounded-xl border-2"><option>Masculino</option><option>Feminino</option><option>Outro</option></select>
-                        <select id="f-civil" class="w-full p-3 rounded-xl border-2"><option>Solteiro(a)</option><option>Casado(a)</option><option>Divorciado(a)</option></select>
+            <div class="p-8 overflow-y-auto custom-scrollbar flex-1">
+                <form id="formFunc">
+                    <div id="m-dados" class="tab-content-mod grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="text-[9px] font-black uppercase text-slate-400">Nome Completo</label>
+                            <input type="text" id="f-nome" class="w-full p-3 rounded-xl border-2 outline-none focus:border-indigo-400">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black uppercase text-slate-400">CPF</label>
+                            <input type="text" id="f-cpf" class="w-full p-3 rounded-xl border-2 outline-none focus:border-indigo-400">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black uppercase text-slate-400">Cargo</label>
+                            <input type="text" id="f-cargo" class="w-full p-3 rounded-xl border-2 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black uppercase text-slate-400">Salário Bruto</label>
+                            <input type="number" id="f-salario" class="w-full p-3 rounded-xl border-2 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black uppercase text-slate-400">Status Atual</label>
+                            <select id="f-status" class="w-full p-3 rounded-xl border-2">
+                                <option value="Ativo">Ativo</option>
+                                <option value="Afastado">Afastado (Licença)</option>
+                                <option value="Férias">Férias</option>
+                                <option value="Desligado">Desligado</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
 
-                <div class="md:col-span-3 font-black text-indigo-600 text-xs uppercase border-b pb-2 mt-4">2. Endereço e Contato</div>
-                <div class="md:col-span-2">
-                    <label class="text-[9px] font-black uppercase text-slate-400">Rua / Logradouro *</label>
-                    <input type="text" id="f-rua" required class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">Número / Bairro *</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="f-num" placeholder="Nº" class="w-1/3 p-3 rounded-xl border-2 outline-none">
-                        <input type="text" id="f-bairro" placeholder="Bairro" class="w-2/3 p-3 rounded-xl border-2 outline-none">
+                    <div id="m-dependentes" class="tab-content-mod hidden">
+                        <div class="flex gap-4 mb-4">
+                            <input type="text" id="dep-nome" placeholder="Nome do Dependente" class="flex-1 p-3 rounded-xl border-2">
+                            <select id="dep-parentesco" class="p-3 rounded-xl border-2">
+                                <option>Filho(a)</option>
+                                <option>Cônjuge</option>
+                                <option>Pai/Mãe</option>
+                            </select>
+                            <button type="button" onclick="addDependente()" class="bg-indigo-600 text-white px-6 rounded-xl font-bold">ADD</button>
+                        </div>
+                        <ul id="lista-dep-ui" class="space-y-2"></ul>
                     </div>
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">CEP *</label>
-                    <input type="text" id="f-cep" class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">E-mail *</label>
-                    <input type="email" id="f-email" required class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">Telefone *</label>
-                    <input type="text" id="f-tel" required class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
 
-                <div class="md:col-span-3 font-black text-indigo-600 text-xs uppercase border-b pb-2 mt-4">3. Dados Profissionais</div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">Cargo / Departamento *</label>
-                    <input type="text" id="f-cargo" required class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">Salário Bruto *</label>
-                    <input type="number" id="f-salario" required class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400">Data de Admissão *</label>
-                    <input type="date" id="f-adm" required class="w-full p-3 rounded-xl border-2 outline-none">
-                </div>
+                    <div id="m-afastamentos" class="tab-content-mod hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-amber-50 rounded-2xl">
+                            <div>
+                                <label class="text-[9px] font-bold">Tipo</label>
+                                <select id="af-tipo" class="w-full p-2 rounded border"><option>Licença Médica</option><option>Férias</option><option>Maternidade</option></select>
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold">Início</label>
+                                <input type="date" id="af-inicio" class="w-full p-2 rounded border">
+                            </div>
+                            <div>
+                                <button type="button" onclick="addAfastamento()" class="mt-4 w-full bg-amber-600 text-white p-2 rounded-lg font-bold">REGISTRAR</button>
+                            </div>
+                        </div>
+                        <div id="lista-af-ui" class="space-y-2"></div>
+                    </div>
+                </form>
+            </div>
 
-                <div class="md:col-span-3 bg-white p-6 rounded-2xl border-2 border-dashed border-indigo-200 grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="md:col-span-4 text-[10px] font-black text-indigo-400 uppercase">Variáveis Mensais (Folha)</div>
-                    <div><label class="text-[9px] font-bold">H. Extras (Qtd)</label><input type="number" id="f-he" value="0" class="w-full p-2 rounded border"></div>
-                    <div><label class="text-[9px] font-bold">Faltas (Dias)</label><input type="number" id="f-faltas" value="0" class="w-full p-2 rounded border"></div>
-                    <div><label class="text-[9px] font-bold">Vale Transp.</label><select id="f-vt" class="w-full p-2 rounded border"><option value="sim">Sim</option><option value="nao">Não</option></select></div>
-                    <div><label class="text-[9px] font-bold">Nº Dependentes</label><input type="number" id="f-dep" value="0" class="w-full p-2 rounded border"></div>
-                </div>
-            </form>
-
-            <div class="p-6 bg-white border-t flex gap-4">
-                <button onclick="salvar()" class="flex-1 bg-indigo-600 text-white font-black p-4 rounded-2xl shadow-lg">SALVAR NO SISTEMA</button>
-                <button onclick="document.getElementById('formFunc').reset()" class="px-6 font-bold text-slate-400 uppercase text-xs">Limpar</button>
+            <div class="p-6 bg-slate-50 border-t flex gap-4">
+                <button onclick="salvar()" class="flex-1 bg-indigo-600 text-white font-black p-4 rounded-2xl shadow-lg">CONSOLIDAR ALTERAÇÕES</button>
             </div>
         </div>
     </div>
 
     <script>
-        let meuGrafico = null;
+        let db = JSON.parse(localStorage.getItem('RH_PRO_V2')) || [];
         let idEdicao = null;
+        let dependentesTemp = [];
+        let afastamentosTemp = [];
 
+        // --- SISTEMA ---
         function tentarLogin() {
             if(document.getElementById('login-user').value === 'admin' && document.getElementById('login-pass').value === '1234') {
                 document.getElementById('tela-login').classList.add('hidden');
                 document.getElementById('conteudo-sistema').classList.remove('hidden');
                 atualizarTudo();
-            } else alert("Acesso Negado!");
+            }
         }
 
-        function logout() { location.reload(); }
-
-        const getBD = () => JSON.parse(localStorage.getItem('RH_RDP_V1')) || [];
-        
         function mudarAba(id) {
             document.querySelectorAll('.aba-item').forEach(a => a.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             atualizarTudo();
         }
 
-        function abrirModal() { idEdicao = null; document.getElementById('formFunc').reset(); document.getElementById('modal-cadastro').classList.remove('hidden'); }
-        function fecharModal() { document.getElementById('modal-cadastro').classList.add('hidden'); }
-
-        // --- MOTOR DE CÁLCULO TRABALHISTA ---
-        function calcularFolha(f) {
-            const bruto = f.salario;
-            const valorHora = bruto / 220;
-            const vHE = f.he * (valorHora * 1.5);
-            const vFaltas = (bruto / 30) * f.faltas;
-            const base = bruto + vHE - vFaltas;
-
-            let inss = 0;
-            if (base <= 1412) inss = base * 0.075;
-            else if (base <= 2666) inss = base * 0.09;
-            else if (base <= 4000) inss = base * 0.12;
-            else inss = base * 0.14;
-            if(inss > 908) inss = 908;
-
-            const baseIRRF = base - inss - (f.dep * 189.59);
-            let irrf = 0;
-            if (baseIRRF > 2259) {
-                if (baseIRRF <= 2826) irrf = (baseIRRF * 0.075) - 169;
-                else if (baseIRRF <= 3751) irrf = (baseIRRF * 0.15) - 381;
-                else irrf = (baseIRRF * 0.275) - 896;
-            }
-
-            const vt = f.vt === 'sim' ? bruto * 0.06 : 0;
-            const fgts = base * 0.08;
-            const liquido = base - inss - irrf - vt;
-
-            return { inss, irrf, vt, fgts, liquido, base, vHE, vFaltas };
+        function mudarTabModal(id) {
+            document.querySelectorAll('.tab-content-mod').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn-mod').forEach(b => b.classList.replace('border-indigo-600', 'border-transparent'));
+            document.getElementById(id).classList.remove('hidden');
+            event.target.classList.replace('border-transparent', 'border-indigo-600');
         }
 
-        // --- CRUD ---
+        // --- LÓGICA DE NEGÓCIO ---
+        function addDependente() {
+            const nome = document.getElementById('dep-nome').value;
+            if(!nome) return;
+            dependentesTemp.push({ nome, parentesco: document.getElementById('dep-parentesco').value });
+            renderDeps();
+        }
+
+        function renderDeps() {
+            document.getElementById('lista-dep-ui').innerHTML = dependentesTemp.map((d, i) => `
+                <li class="bg-white p-3 border rounded-xl flex justify-between items-center text-xs">
+                    <span><b>${d.nome}</b> - ${d.parentesco}</span>
+                    <button onclick="dependentesTemp.splice(${i}, 1); renderDeps()" class="text-rose-500 font-bold">Remover</button>
+                </li>
+            `).join('');
+        }
+
+        function addAfastamento() {
+            const tipo = document.getElementById('af-tipo').value;
+            const data = document.getElementById('af-inicio').value;
+            if(!data) return;
+            afastamentosTemp.push({ tipo, data });
+            renderAfast();
+        }
+
+        function renderAfast() {
+            document.getElementById('lista-af-ui').innerHTML = afastamentosTemp.map(a => `
+                <div class="bg-amber-100 p-3 rounded-xl text-xs border border-amber-200">
+                    🚀 <b>${a.tipo}</b> iniciado em ${a.data}
+                </div>
+            `).join('');
+        }
+
+        // --- SALVAR ---
         function salvar() {
-            const bd = getBD();
             const f = {
                 id: idEdicao || Date.now(),
                 nome: document.getElementById('f-nome').value,
                 cpf: document.getElementById('f-cpf').value,
-                nasc: document.getElementById('f-nasc').value,
-                email: document.getElementById('f-email').value,
-                salario: parseFloat(document.getElementById('f-salario').value),
                 cargo: document.getElementById('f-cargo').value,
-                he: parseFloat(document.getElementById('f-he').value || 0),
-                faltas: parseInt(document.getElementById('f-faltas').value || 0),
-                vt: document.getElementById('f-vt').value,
-                dep: parseInt(document.getElementById('f-dep').value || 0)
+                salario: parseFloat(document.getElementById('f-salario').value),
+                status: document.getElementById('f-status').value,
+                dependentes: dependentesTemp,
+                afastamentos: afastamentosTemp
             };
 
-            if(!f.nome || !f.cpf || !f.salario || !f.nasc) return alert("Preencha todos os campos obrigatórios (*)");
-
             if(idEdicao) {
-                const idx = bd.findIndex(x => x.id === idEdicao);
-                bd[idx] = f;
-            } else {
-                if(bd.some(x => x.cpf === f.cpf)) return alert("CPF já cadastrado!");
-                bd.push(f);
-            }
+                const idx = db.findIndex(x => x.id === idEdicao);
+                db[idx] = f;
+            } else db.push(f);
 
-            localStorage.setItem('RH_RDP_V1', JSON.stringify(bd));
+            localStorage.setItem('RH_PRO_V2', JSON.stringify(db));
             fecharModal();
             atualizarTudo();
         }
 
-        function editar(id) {
-            const f = getBD().find(x => x.id === id);
-            idEdicao = id;
-            document.getElementById('f-nome').value = f.nome;
-            document.getElementById('f-cpf').value = f.cpf;
-            document.getElementById('f-salario').value = f.salario;
-            document.getElementById('f-cargo').value = f.cargo;
+        function abrirModal() {
+            idEdicao = null; dependentesTemp = []; afastamentosTemp = [];
+            document.getElementById('formFunc').reset();
+            renderDeps(); renderAfast();
             document.getElementById('modal-cadastro').classList.remove('hidden');
         }
 
-        function excluir(id) { if(confirm("Confirmar exclusão?")) { localStorage.setItem('RH_RDP_V1', JSON.stringify(getBD().filter(x => x.id !== id))); atualizarTudo(); } }
+        function editar(id) {
+            const f = db.find(x => x.id === id);
+            idEdicao = id;
+            document.getElementById('f-nome').value = f.nome;
+            document.getElementById('f-cpf').value = f.cpf;
+            document.getElementById('f-cargo').value = f.cargo;
+            document.getElementById('f-salario').value = f.salario;
+            document.getElementById('f-status').value = f.status;
+            dependentesTemp = f.dependentes || [];
+            afastamentosTemp = f.afastamentos || [];
+            renderDeps(); renderAfast();
+            document.getElementById('modal-cadastro').classList.remove('hidden');
+        }
 
-        // --- RENDERS ---
-        function atualizarTudo() { renderEquipe(); renderFinanceiro(); renderDash(); }
+        function fecharModal() { document.getElementById('modal-cadastro').classList.add('hidden'); }
+
+        // --- DASHBOARD & RENDERS ---
+        function atualizarTudo() {
+            renderEquipe();
+            renderFinanceiro();
+            
+            const totalBruto = db.reduce((acc, f) => acc + f.salario, 0);
+            const afastados = db.filter(f => f.status === 'Afastado' || f.status === 'Férias').length;
+            
+            document.getElementById('d-custo').innerText = `R$ ${totalBruto.toLocaleString()}`;
+            document.getElementById('d-ativos').innerText = db.filter(f => f.status === 'Ativo').length;
+            document.getElementById('d-afastados').innerText = afastados;
+            document.getElementById('d-fgts').innerText = `R$ ${(totalBruto * 0.08).toLocaleString()}`;
+        }
 
         function renderEquipe() {
-            const busca = document.getElementById('buscaFunc').value.toLowerCase();
-            const bd = getBD().filter(x => x.nome.toLowerCase().includes(busca) || x.cargo.toLowerCase().includes(busca));
-            document.getElementById('lista-equipe').innerHTML = bd.map(f => `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-6"><p class="font-black text-slate-800 uppercase">${f.nome}</p><p class="text-[10px] text-slate-400 font-bold">${f.cargo}</p></td>
-                    <td class="p-6 text-xs text-slate-500">${f.cpf}<br>${f.email}</td>
-                    <td class="p-6"><span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black uppercase">Ativo</span></td>
-                    <td class="p-6 text-right space-x-2">
-                        <button onclick="editar(${f.id})" class="text-indigo-600 font-black text-[10px]">EDITAR</button>
-                        <button onclick="excluir(${f.id})" class="text-rose-500 font-black text-[10px]">EXCLUIR</button>
+            document.getElementById('lista-equipe').innerHTML = db.map(f => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-6">
+                        <p class="font-black text-slate-800 uppercase">${f.nome}</p>
+                        <p class="text-[10px] text-indigo-500 font-bold">${f.cargo}</p>
+                    </td>
+                    <td class="p-6">
+                        <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${f.status === 'Ativo' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}">
+                            ${f.status}
+                        </span>
+                    </td>
+                    <td class="p-6 text-xs text-slate-400 font-bold">${f.dependentes?.length || 0} Deps</td>
+                    <td class="p-6 text-right">
+                        <button onclick="editar(${f.id})" class="bg-slate-100 hover:bg-indigo-600 hover:text-white p-2 px-4 rounded-xl text-[10px] font-black transition">VER DETALHES</button>
                     </td>
                 </tr>
             `).join('');
         }
 
         function renderFinanceiro() {
-            document.getElementById('grid-financeiro').innerHTML = getBD().map(f => {
-                const c = calcularFolha(f);
+            // Lógica de cálculo considerando dependentes
+            document.getElementById('grid-financeiro').innerHTML = db.map(f => {
+                const baseIRRF = f.salario - (f.dependentes.length * 189.59);
                 return `
-                    <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-start mb-6 border-b pb-4">
-                            <h3 class="font-black text-slate-800 uppercase leading-none">${f.nome}<br><span class="text-[10px] text-indigo-500 font-bold">${f.cargo}</span></h3>
-                            <button class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase">Recibo PDF</button>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-black text-sm uppercase">${f.nome}</h4>
+                            <span class="text-[9px] bg-slate-100 p-1 px-2 rounded font-bold">${f.dependentes.length} DEP.</span>
                         </div>
-                        <div class="space-y-3 mb-6">
-                            <div class="flex justify-between text-xs"><span>Salário Base</span> <span class="font-bold">R$ ${f.salario.toFixed(2)}</span></div>
-                            <div class="flex justify-between text-xs text-emerald-600"><span>Horas Extras</span> <span>+ R$ ${c.vHE.toFixed(2)}</span></div>
-                            <div class="flex justify-between text-xs text-rose-500"><span>Desc. INSS/IRRF</span> <span>- R$ ${(c.inss + c.irrf).toFixed(2)}</span></div>
-                            <div class="flex justify-between text-xs text-rose-500"><span>Desc. Faltas/VT</span> <span>- R$ ${(c.vFaltas + c.vt).toFixed(2)}</span></div>
-                        </div>
-                        <div class="bg-indigo-50 p-4 rounded-2xl flex justify-between items-center">
-                            <span class="text-[10px] font-black text-indigo-400 uppercase">Líquido</span>
-                            <span class="text-2xl font-black text-indigo-700">R$ ${c.liquido.toFixed(2)}</span>
+                        <div class="flex justify-between text-xs mb-2"><span>Salário Base</span> <b>R$ ${f.salario.toFixed(2)}</b></div>
+                        <div class="flex justify-between text-xs text-rose-500"><span>Ded. Dependentes</span> <b>- R$ ${(f.dependentes.length * 189.59).toFixed(2)}</b></div>
+                        <div class="mt-4 pt-4 border-t flex justify-between items-center">
+                            <span class="text-[10px] font-black text-indigo-500 uppercase tracking-tighter">Estimativa Líquida</span>
+                            <span class="text-xl font-black">R$ ${(f.salario * 0.85).toFixed(2)}</span>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function renderDash() {
-            const bd = getBD();
-            let bruto = 0, fgts = 0;
-            bd.forEach(f => {
-                const c = calcularFolha(f);
-                bruto += f.salario;
-                fgts += c.fgts;
-            });
-            document.getElementById('d-custo').innerText = `R$ ${bruto.toLocaleString()}`;
-            document.getElementById('d-fgts').innerText = `R$ ${fgts.toLocaleString()}`;
-            document.getElementById('d-ativos').innerText = bd.length;
-
-            const ctx = document.getElementById('graficoFolha').getContext('2d');
-            if(meuGrafico) meuGrafico.destroy();
-            meuGrafico = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: bd.map(f => f.nome.split(' ')[0]),
-                    datasets: [{ label: 'Salário Base', data: bd.map(f => f.salario), backgroundColor: '#6366f1', borderRadius: 8 }]
-                }
-            });
-        }
+        function logout() { location.reload(); }
     </script>
 </body>
 </html>
