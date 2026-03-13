@@ -180,21 +180,76 @@
         </div>
     </div>
 
-    <div id="modal-rubrica" class="fixed inset-0 bg-slate-900/80 hidden z-[200] flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] p-8">
-            <h3 class="font-black text-xl mb-6 uppercase italic text-indigo-600">Nova Rubrica</h3>
-            <div class="space-y-4">
-                <input type="text" id="r-cod" placeholder="Cód. eSocial" class="w-full p-4 border rounded-2xl outline-none">
-                <input type="text" id="r-nome" placeholder="Nome Verba" class="w-full p-4 border rounded-2xl outline-none">
-                <select id="r-tipo" class="w-full p-4 border rounded-2xl">
-                    <option value="Provento">Provento</option>
-                    <option value="Desconto">Desconto</option>
+<div id="modal-rubrica" class="fixed inset-0 bg-slate-900/80 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-md">
+    <div class="bg-white w-full max-w-2xl rounded-[2.5rem] p-8 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="font-black text-xl uppercase italic text-indigo-600">Configuração S-1010 (Rubricas)</h3>
+            <button onclick="fecharModalRubrica()" class="text-slate-400 font-bold">FECHAR</button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2">
+                <label class="text-[9px] font-black uppercase text-slate-400">Nome da Verba no Holerite</label>
+                <input type="text" id="r-nome" placeholder="Ex: Adicional de Periculosidade" class="w-full p-3 border-2 rounded-xl outline-none focus:border-indigo-500">
+            </div>
+            
+            <div>
+                <label class="text-[9px] font-black uppercase text-slate-400">Cód. Interno</label>
+                <input type="text" id="r-cod" placeholder="Ex: 005" class="w-full p-3 border-2 rounded-xl">
+            </div>
+
+            <div>
+                <label class="text-[9px] font-black uppercase text-slate-400">Natureza (eSocial)</label>
+                <select id="r-natureza" class="w-full p-3 border-2 rounded-xl">
+                    <option value="1000">1000 - Salário</option>
+                    <option value="1020">1020 - Férias</option>
+                    <option value="1201">1201 - Gratificações</option>
+                    <option value="9201">9201 - Contribuição Previdenciária</option>
                 </select>
-                <button onclick="salvarRubrica()" class="w-full bg-indigo-600 text-white font-black p-4 rounded-2xl">SALVAR</button>
-                <button onclick="fecharModalRubrica()" class="w-full text-slate-400 font-bold text-xs uppercase">Cancelar</button>
+            </div>
+
+            <div>
+                <label class="text-[9px] font-black uppercase text-slate-400">Tipo de Rubrica</label>
+                <select id="r-tipo" class="w-full p-3 border-2 rounded-xl font-bold">
+                    <option value="1">1 - Vencimento (Provento)</option>
+                    <option value="2">2 - Desconto</option>
+                    <option value="3">3 - Informativa</option>
+                </select>
+            </div>
+
+            <div class="md:col-span-2 bg-slate-50 p-4 rounded-2xl border-2 border-dashed mt-2">
+                <p class="text-[10px] font-black text-indigo-500 uppercase mb-4">Incidências Tributárias (Codificação eSocial)</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-[8px] font-black">Previdência (INSS)</label>
+                        <select id="inc-inss" class="w-full p-2 text-[10px] border rounded-lg">
+                            <option value="11">11 - Mensal (Base Total)</option>
+                            <option value="00">00 - Não é Base</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[8px] font-black">IRRF</label>
+                        <select id="inc-irrf" class="w-full p-2 text-[10px] border rounded-lg">
+                            <option value="11">11 - Remuneração Mensal</option>
+                            <option value="00">00 - Não é Base</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[8px] font-black">FGTS</label>
+                        <select id="inc-fgts" class="w-full p-2 text-[10px] border rounded-lg">
+                            <option value="11">11 - Base Mensal</option>
+                            <option value="00">00 - Não é Base</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <div class="mt-8 flex gap-4">
+            <button onclick="salvarRubrica()" class="flex-1 bg-indigo-600 text-white font-black p-4 rounded-2xl shadow-lg hover:bg-indigo-700 transition">CONSOLIDAR RUBRICA</button>
+        </div>
     </div>
+</div>
 
     <script>
         let dbFunc = JSON.parse(localStorage.getItem('RH_FUNC_V3')) || [];
@@ -307,12 +362,53 @@
         function modalRubrica() { document.getElementById('modal-rubrica').classList.remove('hidden'); }
         function fecharModalRubrica() { document.getElementById('modal-rubrica').classList.add('hidden'); }
 
-        function salvarRubrica() {
-            dbRubricas.push({ id: Date.now(), cod: document.getElementById('r-cod').value, nome: document.getElementById('r-nome').value, tipo: document.getElementById('r-tipo').value });
-            localStorage.setItem('RH_RUBRICAS_V3', JSON.stringify(dbRubricas));
-            fecharModalRubrica();
-            atualizarTudo();
+      function salvarRubrica() {
+    const r = {
+        id: Date.now(),
+        cod: document.getElementById('r-cod').value,
+        nome: document.getElementById('r-nome').value,
+        natureza: document.getElementById('r-natureza').value,
+        tipo: document.getElementById('r-tipo').value,
+        incidencias: {
+            inss: document.getElementById('inc-inss').value,
+            irrf: document.getElementById('inc-irrf').value,
+            fgts: document.getElementById('inc-fgts').value
         }
+    };
+
+    if(!r.nome || !r.cod) return alert("Código e Nome são obrigatórios para o eSocial!");
+
+    dbRubricas.push(r);
+    localStorage.setItem('RH_RUBRICAS_V3', JSON.stringify(dbRubricas));
+    fecharModalRubrica();
+    atualizarTudo();
+}
+
+// Atualize o render para mostrar os códigos
+function renderRubricas() {
+    const lista = document.getElementById('lista-rubricas');
+    if(!lista) return;
+
+    lista.innerHTML = dbRubricas.map(r => `
+        <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-4 font-bold text-indigo-600">${r.cod}</td>
+            <td class="p-4">
+                <p class="font-black uppercase text-xs">${r.nome}</p>
+                <p class="text-[8px] text-slate-400 font-bold">Nat: ${r.natureza} | Tipo: ${r.tipo}</p>
+            </td>
+            <td class="p-4">
+                <div class="flex gap-1">
+                    <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[8px] font-black rounded border border-blue-200">INSS:${r.incidencias?.inss || '00'}</span>
+                    <span class="px-2 py-0.5 bg-orange-50 text-orange-600 text-[8px] font-black rounded border border-orange-200">FGTS:${r.incidencias?.fgts || '00'}</span>
+                    <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[8px] font-black rounded border border-emerald-200">IR:${r.incidencias?.irrf || '00'}</span>
+                </div>
+            </td>
+            <td class="p-4 text-right">
+                <button onclick="removerRubrica(${r.id})" class="text-rose-500 font-black text-[10px]">REMOVER</button>
+            </td>
+        </tr>
+    `).join('');
+}
 
         function efetuarLancamento() {
             const l = { id: Date.now(), funcId: document.getElementById('lan-func').value, rubricaId: document.getElementById('lan-rubrica').value, valor: parseFloat(document.getElementById('lan-valor').value) };
