@@ -3,140 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RH Master - Oficial</title>
+    <title>RH Master - Sistema Completo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-<body class="bg-slate-100 font-sans">
+<body class="bg-slate-100 font-sans min-h-screen">
 
-    <nav class="bg-blue-800 text-white p-4 shadow-lg mb-6">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 class="font-black text-xl tracking-tight">RH_MASTER PRO</h1>
-            <div class="space-x-4">
-                <button onclick="aba('painel')" class="text-sm font-bold hover:underline">EQUIPE</button>
-                <button onclick="aba('financeiro')" class="text-sm font-bold hover:underline">FOLHA/PDF</button>
+    <nav class="bg-blue-900 text-white p-4 shadow-xl sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex flex-wrap justify-between items-center">
+            <h1 class="font-black text-xl tracking-tighter mr-4">RH_MASTER PRO</h1>
+            <div class="flex space-x-2 md:space-x-6 overflow-x-auto py-2">
+                <button onclick="aba('equipe')" class="text-xs font-bold uppercase hover:text-yellow-400 whitespace-nowrap">👥 Equipe</button>
+                <button onclick="aba('folha')" class="text-xs font-bold uppercase hover:text-yellow-400 whitespace-nowrap">💰 Folha</button>
+                <button onclick="aba('ponto')" class="text-xs font-bold uppercase hover:text-yellow-400 whitespace-nowrap">⏰ Ponto</button>
+                <button onclick="aba('vagas')" class="text-xs font-bold uppercase hover:text-yellow-400 whitespace-nowrap">📢 Vagas</button>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto p-4">
+    <main class="max-w-5xl mx-auto p-4 mt-4">
         
-        <section id="painel">
-            <div class="bg-white p-6 rounded-xl shadow-sm border mb-6">
-                <h2 class="font-bold text-gray-700 mb-4">Novo Colaborador</h2>
-                <div class="flex flex-col md:flex-row gap-3">
-                    <input type="text" id="fnome" placeholder="Nome Completo" class="flex-1 border p-2 rounded">
-                    <input type="number" id="fsalario" placeholder="Salário Bruto" class="border p-2 rounded w-full md:w-40">
-                    <button onclick="adicionar()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">ADICIONAR</button>
+        <section id="equipe">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border mb-6">
+                <h2 class="font-bold text-gray-700 mb-4">Cadastrar Novo Colaborador</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="fnome" placeholder="Nome Completo" class="border-2 border-slate-100 p-3 rounded-xl focus:border-blue-500 outline-none">
+                    <input type="number" id="fsalario" placeholder="Salário Bruto" class="border-2 border-slate-100 p-3 rounded-xl focus:border-blue-500 outline-none">
+                    <button onclick="adicionar()" class="bg-blue-600 text-white rounded-xl font-black hover:bg-blue-700 transition">SALVAR</button>
                 </div>
             </div>
-
-            <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-50 border-b">
-                        <tr><th class="p-3">Nome</th><th class="p-3">Salário</th><th class="p-3 text-right">Acção</th></tr>
+            <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b">
+                        <tr><th class="p-4 text-xs font-black text-slate-400 uppercase">Nome</th><th class="p-4 text-xs font-black text-slate-400 uppercase">Salário</th><th class="p-4 text-right">Acção</th></tr>
                     </thead>
-                    <tbody id="tabela-corpo"></tbody>
+                    <tbody id="tabela-equipe"></tbody>
                 </table>
             </div>
         </section>
 
-        <section id="financeiro" class="hidden">
-            <h2 class="font-bold text-xl mb-4 text-blue-800">Processamento de Salários</h2>
-            <div id="lista-holerites" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                </div>
+        <section id="folha" class="hidden">
+            <h2 class="font-black text-2xl mb-6 text-blue-900 italic">Folha de Pagamento</h2>
+            <div id="lista-folha" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
         </section>
 
-    </main>
+        <section id="ponto" class="hidden text-center">
+            <div class="bg-white p-10 rounded-3xl shadow-sm border inline-block w-full max-w-md">
+                <h2 class="text-gray-400 font-bold uppercase text-xs mb-2">Relógio Digital</h2>
+                <div id="relogio" class="text-5xl font-black text-blue-900 mb-8 tracking-widest">00:00:00</div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="baterPonto('ENTRADA')" class="bg-emerald-500 text-white p-4 rounded-2xl font-bold shadow-lg shadow-emerald-100 hover:scale-105 transition">ENTRADA</button>
+                    <button onclick="baterPonto('SAÍDA')" class="bg-rose-500 text-white p-4 rounded-2xl font-bold shadow-lg shadow-rose-100 hover:scale-105 transition">SAÍDA</button>
+                </div>
+            </div>
+            <div class="mt-8 bg-white rounded-2xl shadow-sm border overflow-hidden text-left max-w-2xl mx-auto">
+                <table class="w-full">
+                    <thead class="bg-slate-50"><tr><th class="p-4 text-xs font-black text-slate-400">HISTÓRICO DE MARCAÇÕES</th></tr></thead>
+                    <tbody id="tabela-ponto"></tbody>
+                </table>
+            </div>
+        </section>
 
-    <div id="area-pdf" class="hidden p-10">
-        <h1 style="font-size: 24px; border-bottom: 2px solid #000;">RECIBO DE VENCIMENTO</h1>
-        <p style="margin-top: 20px;"><strong>Colaborador:</strong> <span id="pdf-n"></span></p>
-        <p><strong>Salário Bruto:</strong> R$ <span id="pdf-s"></span></p>
-        <p style="color: red;"><strong>Desconto INSS (11%):</strong> R$ <span id="pdf-i"></span></p>
-        <hr>
-        <h2 style="color: blue;">LÍQUIDO A RECEBER: R$ <span id="pdf-l"></span></h2>
-    </div>
-
-    <script>
-        // Função para trocar de aba
-        function aba(id) {
-            document.getElementById('painel').classList.add('hidden');
-            document.getElementById('financeiro').classList.add('hidden');
-            document.getElementById(id).classList.remove('hidden');
-            if(id === 'financeiro') carregarFolha();
-        }
-
-        // Adicionar funcionário
-        function adicionar() {
-            const nome = document.getElementById('fnome').value;
-            const salario = document.getElementById('fsalario').value;
-
-            if(!nome || !salario) return alert("Preencha os campos!");
-
-            const lista = JSON.parse(localStorage.getItem('bd_rh')) || [];
-            lista.push({ id: Date.now(), nome: nome, salario: parseFloat(salario) });
-            localStorage.setItem('bd_rh', JSON.stringify(lista));
-
-            document.getElementById('fnome').value = '';
-            document.getElementById('fsalario').value = '';
-            carregarTabela();
-            alert("Cadastrado!");
-        }
-
-        // Listar na tabela
-        function carregarTabela() {
-            const lista = JSON.parse(localStorage.getItem('bd_rh')) || [];
-            const corpo = document.getElementById('tabela-corpo');
-            corpo.innerHTML = lista.map(f => `
-                <tr class="border-b">
-                    <td class="p-3 font-medium">${f.nome}</td>
-                    <td class="p-3 text-gray-600">R$ ${f.salario.toFixed(2)}</td>
-                    <td class="p-3 text-right"><button onclick="remover(${f.id})" class="text-red-500 hover:underline">Remover</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function remover(id) {
-            let lista = JSON.parse(localStorage.getItem('bd_rh')) || [];
-            lista = lista.filter(x => x.id !== id);
-            localStorage.setItem('bd_rh', JSON.stringify(lista));
-            carregarTabela();
-        }
-
-        // Gerar Holerites na aba financeira
-        function carregarFolha() {
-            const lista = JSON.parse(localStorage.getItem('bd_rh')) || [];
-            const container = document.getElementById('lista-holerites');
-            container.innerHTML = lista.map(f => {
-                const inss = f.salario * 0.11;
-                const liq = f.salario - inss;
-                return `
-                    <div class="bg-white p-4 rounded-lg shadow-sm border-t-4 border-blue-500">
-                        <p class="font-bold text-gray-800">${f.nome}</p>
-                        <p class="text-xs text-gray-500 mb-2">Líquido: R$ ${liq.toFixed(2)}</p>
-                        <button onclick="gerarPDF('${f.nome}', ${f.salario}, ${inss}, ${liq})" class="w-full bg-slate-800 text-white text-xs py-2 rounded font-bold uppercase">Gerar PDF</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Função do PDF
-        function gerarPDF(n, s, i, l) {
-            document.getElementById('pdf-n').innerText = n;
-            document.getElementById('pdf-s').innerText = s.toFixed(2);
-            document.getElementById('pdf-i').innerText = i.toFixed(2);
-            document.getElementById('pdf-l').innerText = l.toFixed(2);
-            
-            const area = document.getElementById('area-pdf');
-            area.classList.remove('hidden');
-            
-            const opt = { margin: 1, filename: 'Holerite_'+n+'.pdf', jsPDF: { unit: 'in', format: 'letter' } };
-            html2pdf().from(area).set(opt).save().then(() => area.classList.add('hidden'));
-        }
-
-        // Iniciar carregando a tabela
-        carregarTabela();
-    </script>
-</body>
-</html>
+        <section id="vagas" class="hidden">
+            <h2 class="font-black text-2xl mb-6 text-blue-900 italic">Recrutamento & Seleção</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl border-l-8
