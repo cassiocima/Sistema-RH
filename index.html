@@ -3,162 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RH Master - Holerites</title>
+    <title>RH Master - Sistema Integrado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        .tab-active { border-bottom: 3px solid #2563eb; color: #2563eb; }
-        @media print { .no-print { display: none; } }
+        .sidebar-item { cursor: pointer; transition: 0.3s; }
+        .sidebar-item:hover { background: #1e40af; }
+        .active-tab { background: #1e40af; border-left: 4px solid #fbbf24; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-50 flex min-h-screen font-sans">
 
-    <div class="max-w-5xl mx-auto p-4 md:p-8">
-        <header class="flex justify-between items-center mb-10 bg-white p-6 rounded-xl shadow-sm no-print">
-            <div>
-                <h1 class="text-3xl font-extrabold text-blue-900">RH Master Pro</h1>
-                <p class="text-gray-500 font-medium">Módulo de Folha de Pagamento</p>
-            </div>
-        </header>
+    <aside class="w-64 bg-blue-900 text-white flex-shrink-0 hidden md:flex flex-col">
+        <div class="p-6 font-black text-2xl tracking-tighter border-b border-blue-800">RH_MASTER</div>
+        <nav class="flex-1 mt-4">
+            <div onclick="mudarAba('cadastro')" id="m-cadastro" class="sidebar-item p-4 active-tab">👥 Colaboradores</div>
+            <div onclick="mudarAba('folha')" id="m-folha" class="sidebar-item p-4">💰 Folha & Holerite</div>
+            <div onclick="mudarAba('ponto')" id="m-ponto" class="sidebar-item p-4">⏰ Controle de Ponto</div>
+            <div onclick="mudarAba('vagas')" id="m-vagas" class="sidebar-item p-4">📢 Recrutamento</div>
+        </nav>
+        <div class="p-4 text-xs opacity-50 text-center">v2.0 - 2026</div>
+    </aside>
 
-        <div class="flex space-x-8 mb-8 border-b border-gray-200 text-gray-500 font-bold no-print">
-            <button onclick="mudarAba('cadastro')" id="btn-cadastro" class="pb-2 tab-active">1. Cadastro</button>
-            <button onclick="mudarAba('folha')" id="btn-folha" class="pb-2 hover:text-blue-600 transition">2. Folha & PDF</button>
-        </div>
-
-        <div id="aba-cadastro" class="space-y-6">
-            <div class="bg-white p-8 rounded-2xl shadow-sm border">
-                <form id="formFuncionario" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-black text-gray-500 uppercase mb-1">Nome do Funcionário</label>
-                        <input type="text" id="nome" required class="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-gray-500 uppercase mb-1">Salário Bruto</label>
-                        <input type="number" id="salario" step="0.01" required class="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none">
-                    </div>
-                    <button type="submit" class="md:col-span-3 bg-blue-600 text-white font-black py-4 rounded-xl hover:bg-blue-700 transition">SALVAR</button>
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+        
+        <div id="aba-cadastro">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Gestão de Equipe</h2>
+            <div class="bg-white p-6 rounded-xl shadow-sm border mb-8">
+                <form id="formFuncionario" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="nome" placeholder="Nome do Funcionário" required class="border p-3 rounded-lg outline-none focus:ring-2 ring-blue-500">
+                    <input type="number" id="salario" placeholder="Salário Bruto" required class="border p-3 rounded-lg outline-none">
+                    <button type="submit" class="md:col-span-2 bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">Cadastrar no Sistema</button>
                 </form>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
                 <table class="w-full text-left">
+                    <thead class="bg-gray-100 uppercase text-xs font-bold text-gray-600">
+                        <tr><th class="p-4">Nome</th><th class="p-4">Salário</th><th class="p-4 text-right">Ação</th></tr>
+                    </thead>
                     <tbody id="listaFuncionarios"></tbody>
                 </table>
             </div>
         </div>
 
-        <div id="aba-folha" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6" id="cardsFolha">
-            </div>
-    </div>
-
-    <div id="modelo-pdf" class="hidden">
-        <div style="padding: 40px; font-family: sans-serif; color: #333;">
-            <h1 style="border-bottom: 2px solid #333;">DEMONSTRATIVO DE PAGAMENTO</h1>
-            <p><strong>Empresa:</strong> Minha Empresa RH LTDA</p>
-            <hr>
-            <p><strong>Funcionário:</strong> <span id="pdf-nome"></span></p>
-            <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
-                <tr style="background: #eee;">
-                    <th style="text-align: left; padding: 10px;">Descrição</th>
-                    <th style="text-align: right; padding: 10px;">Proventos</th>
-                    <th style="text-align: right; padding: 10px;">Descontos</th>
-                </tr>
-                <tr>
-                    <td style="padding: 10px;">Salário Base</td>
-                    <td style="text-align: right; padding: 10px;">R$ <span id="pdf-salario"></span></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px;">INSS</td>
-                    <td></td>
-                    <td style="text-align: right; padding: 10px; color: red;">R$ <span id="pdf-inss"></span></td>
-                </tr>
-                <tr style="font-weight: bold; font-size: 1.2em; border-top: 2px solid #333;">
-                    <td style="padding: 10px;">LÍQUIDO:</td>
-                    <td colspan="2" style="text-align: right; padding: 10px; color: blue;">R$ <span id="pdf-liquido"></span></td>
-                </tr>
-            </table>
+        <div id="aba-folha" class="hidden">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Processamento de Folha</h2>
+            <div id="cardsFolha" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
         </div>
-    </div>
 
-    <script>
-        function mudarAba(aba) {
-            document.getElementById('aba-cadastro').classList.toggle('hidden', aba !== 'cadastro');
-            document.getElementById('aba-folha').classList.toggle('hidden', aba !== 'folha');
-            document.getElementById('btn-cadastro').classList.toggle('tab-active', aba === 'cadastro');
-            document.getElementById('btn-folha').classList.toggle('tab-active', aba === 'folha');
-            if(aba === 'folha') renderizarFolha();
-        }
+        <div id="aba-ponto" class="hidden">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Registro de Jornada</h2>
+            <div class="bg-white p-8 rounded-xl shadow-sm border text-center mb-8">
+                <div class="text-4xl font-mono font-bold mb-4 text-blue-900" id="relogio">00:00:00</div>
+                <div class="flex justify-center gap-4">
+                    <button onclick="baterPonto('Entrada')" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700">Registrar Entrada</button>
+                    <button onclick="baterPonto('Saída')" class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700">Registrar Saída</button>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 text-xs font-bold">
+                        <tr><th class="p-4">Data</th><th class="p-4">Tipo</th><th class="p-4">Hora</th></tr>
+                    </thead>
+                    <tbody id="listaPonto"></tbody>
+                </table>
+            </div>
+        </div>
 
-        const form = document.getElementById('formFuncionario');
-
-        function salvar() {
-            const funcionarios = JSON.parse(localStorage.getItem('rh_v2')) || [];
-            funcionarios.push({
-                id: Date.now(),
-                nome: document.getElementById('nome').value,
-                salario: parseFloat(document.getElementById('salario').value)
-            });
-            localStorage.setItem('rh_v2', JSON.stringify(funcionarios));
-            form.reset();
-            renderizarLista();
-        }
-
-        function renderizarLista() {
-            const dados = JSON.parse(localStorage.getItem('rh_v2')) || [];
-            document.getElementById('listaFuncionarios').innerHTML = dados.map(f => `
-                <tr class="border-b"><td class="p-4 font-bold">${f.nome}</td><td class="p-4 text-right"><button onclick="excluir(${f.id})" class="text-red-500">Excluir</button></td></tr>
-            `).join('');
-        }
-
-        function excluir(id) {
-            let dados = JSON.parse(localStorage.getItem('rh_v2')) || [];
-            localStorage.setItem('rh_v2', JSON.stringify(dados.filter(f => f.id !== id)));
-            renderizarLista();
-        }
-
-        function renderizarFolha() {
-            const dados = JSON.parse(localStorage.getItem('rh_v2')) || [];
-            const container = document.getElementById('aba-folha');
-            container.innerHTML = dados.map(f => {
-                const inss = f.salario * 0.11; // Simplificado
-                const liq = f.salario - inss;
-                return `
-                    <div class="bg-white p-6 rounded-xl shadow-sm border">
-                        <h3 class="font-bold text-lg mb-4">${f.nome}</h3>
-                        <p class="text-sm text-gray-600">Salário: R$ ${f.salario.toFixed(2)}</p>
-                        <p class="text-sm text-red-500">INSS: R$ ${inss.toFixed(2)}</p>
-                        <button onclick="gerarPDF('${f.nome}', ${f.salario}, ${inss}, ${liq})" class="mt-4 w-full bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700">⬇️ Baixar Holerite (PDF)</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function gerarPDF(nome, salario, inss, liquido) {
-            // Preenche o modelo invisível com os dados
-            document.getElementById('pdf-nome').innerText = nome;
-            document.getElementById('pdf-salario').innerText = salario.toFixed(2);
-            document.getElementById('pdf-inss').innerText = inss.toFixed(2);
-            document.getElementById('pdf-liquido').innerText = liquido.toFixed(2);
-
-            const elemento = document.getElementById('modelo-pdf');
-            elemento.classList.remove('hidden'); // Mostra para o html2pdf capturar
-
-            const opcoes = {
-                margin: 1,
-                filename: `Holerite_${nome}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opcoes).from(elemento).save().then(() => {
-                elemento.classList.add('hidden'); // Esconde de novo
-            });
-        }
-
-        form.onsubmit = (e) => { e.preventDefault(); salvar(); };
-        renderizarLista();
-    </script>
-</body>
-</html>
+        <div id="aba-vagas" class="hidden">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Portal de Recrutamento</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl border-t-4 border-yellow-500 shadow-sm">
+                    <h3 class="font-bold text-lg">Analista de RH</h3>
+                    <p class="text-gray-500 text-sm mb-4">São Paulo - Híbrido</p>
+                    <span class="bg-green-100 text-green-700 px-2 py-
