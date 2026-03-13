@@ -3,120 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RH Master - Cadastro de Funcionários</title>
+    <title>RH Master - Gestão Completa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f3f4f6; }
+        .tab-active { border-bottom: 3px solid #2563eb; color: #2563eb; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="bg-gray-100 min-h-screen">
 
-    <div class="max-w-4xl mx-auto">
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold text-blue-800">Sistema RH Master</h1>
-            <p class="text-gray-600">Módulo de Cadastro de Colaboradores (FRD-RF010)</p>
+    <div class="max-w-5xl mx-auto p-4 md:p-8">
+        <header class="flex justify-between items-center mb-10 bg-white p-6 rounded-xl shadow-sm">
+            <div>
+                <h1 class="text-3xl font-extrabold text-blue-900">RH Master Pro</h1>
+                <p class="text-gray-500 font-medium">Painel Administrativo v1.2</p>
+            </div>
+            <div class="text-right hidden md:block">
+                <span class="block text-sm font-bold text-gray-700">Status do Sistema:</span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Online (GitHub Pages)</span>
+            </div>
         </header>
 
-        <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-            <h2 class="text-xl font-semibold mb-4 border-b pb-2">Novo Cadastro</h2>
-            <form id="formFuncionario" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Nome Completo</label>
-                    <input type="text" id="nome" required class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">CPF</label>
-                    <input type="text" id="cpf" placeholder="000.000.000-00" required class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Cargo</label>
-                    <input type="text" id="cargo" required class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Salário Base (R$)</label>
-                    <input type="number" id="salario" step="0.01" required class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm">
-                </div>
-                <div class="md:col-span-2">
-                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">
-                        Salvar Colaborador
-                    </button>
-                </div>
-            </form>
+        <div class="flex space-x-8 mb-8 border-b border-gray-200 text-gray-500 font-bold">
+            <button onclick="mudarAba('cadastro')" id="btn-cadastro" class="pb-2 tab-active">1. Cadastro de Equipe</button>
+            <button onclick="mudarAba('folha')" id="btn-folha" class="pb-2 hover:text-blue-600 transition">2. Folha de Pagamento</button>
         </div>
 
-        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="p-4 bg-gray-50 border-b">
-                <h2 class="text-lg font-semibold text-gray-700">Colaboradores Cadastrados</h2>
+        <div id="aba-cadastro" class="space-y-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h2 class="text-xl font-bold mb-6 text-gray-800 italic">Preencha os dados do novo colaborador</h2>
+                <form id="formFuncionario" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-black text-gray-500 uppercase mb-1">Nome Completo</label>
+                        <input type="text" id="nome" required class="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase mb-1">Salário Bruto (R$)</label>
+                        <input type="number" id="salario" step="0.01" required class="w-full border-2 border-gray-100 rounded-xl p-3 focus:border-blue-500 outline-none transition" placeholder="Ex: 3500.00">
+                    </div>
+                    <button type="submit" class="md:col-span-3 bg-blue-600 text-white font-black py-4 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition">
+                        FINALIZAR CADASTRO
+                    </button>
+                </form>
             </div>
-            <table class="w-full text-left">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="p-3 text-sm font-semibold text-gray-600">Nome</th>
-                        <th class="p-3 text-sm font-semibold text-gray-600">Cargo</th>
-                        <th class="p-3 text-sm font-semibold text-gray-600">Salário</th>
-                        <th class="p-3 text-sm font-semibold text-gray-600">Ação</th>
-                    </tr>
-                </thead>
-                <tbody id="listaFuncionarios">
-                    </tbody>
-            </table>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="p-4 text-xs font-black text-gray-400 uppercase">Colaborador</th>
+                            <th class="p-4 text-xs font-black text-gray-400 uppercase text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaFuncionarios"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="aba-folha" class="hidden space-y-6">
+            <div class="bg-blue-900 text-white p-6 rounded-2xl shadow-xl">
+                <h2 class="text-2xl font-bold mb-2">Calculadora de Eventos (RF015)</h2>
+                <p class="opacity-80">O sistema processa automaticamente os descontos legais de INSS.</p>
+            </div>
+            <div id="cardsFolha" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                </div>
         </div>
     </div>
 
     <script>
+        // Lógica de Troca de Abas
+        function mudarAba(aba) {
+            document.getElementById('aba-cadastro').classList.toggle('hidden', aba !== 'cadastro');
+            document.getElementById('aba-folha').classList.toggle('hidden', aba !== 'folha');
+            document.getElementById('btn-cadastro').classList.toggle('tab-active', aba === 'cadastro');
+            document.getElementById('btn-folha').classList.toggle('tab-active', aba === 'folha');
+            if(aba === 'folha') calcularFolha();
+        }
+
+        // Funções de Cálculo e Dados
         const form = document.getElementById('formFuncionario');
-        const lista = document.getElementById('listaFuncionarios');
 
-        // Função para carregar dados salvos
-        function carregarFuncionarios() {
-            const dados = JSON.parse(localStorage.getItem('funcionarios')) || [];
-            lista.innerHTML = '';
-            
-            dados.forEach((func, index) => {
-                const linha = `
-                    <tr class="border-t hover:bg-gray-50">
-                        <td class="p-3 text-sm">${func.nome}</td>
-                        <td class="p-3 text-sm">${func.cargo}</td>
-                        <td class="p-3 text-sm">R$ ${func.salario}</td>
-                        <td class="p-3 text-sm">
-                            <button onclick="remover(${index})" class="text-red-500 hover:underline">Excluir</button>
-                        </td>
-                    </tr>
-                `;
-                lista.innerHTML += linha;
-            });
-        }
-
-        // Função para salvar novo funcionário
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const novoFunc = {
+        function salvar() {
+            const funcionarios = JSON.parse(localStorage.getItem('rh_data')) || [];
+            const novo = {
+                id: Date.now(),
                 nome: document.getElementById('nome').value,
-                cpf: document.getElementById('cpf').value,
-                cargo: document.getElementById('cargo').value,
-                salario: document.getElementById('salario').value
+                salario: parseFloat(document.getElementById('salario').value)
             };
-
-            const bancoAtual = JSON.parse(localStorage.getItem('funcionarios')) || [];
-            bancoAtual.push(novoFunc);
-            localStorage.setItem('funcionarios', JSON.stringify(bancoAtual));
-            
+            funcionarios.push(novo);
+            localStorage.setItem('rh_data', JSON.stringify(funcionarios));
             form.reset();
-            carregarFuncionarios();
-            alert('Funcionário cadastrado com sucesso!');
-        });
-
-        // Função para remover
-        function remover(index) {
-            const bancoAtual = JSON.parse(localStorage.getItem('funcionarios')) || [];
-            bancoAtual.splice(index, 1);
-            localStorage.setItem('funcionarios', JSON.stringify(bancoAtual));
-            carregarFuncionarios();
+            renderizarLista();
         }
 
-        // Iniciar a página carregando os dados
-        carregarFuncionarios();
+        function renderizarLista() {
+            const dados = JSON.parse(localStorage.getItem('rh_data')) || [];
+            const lista = document.getElementById('listaFuncionarios');
+            lista.innerHTML = dados.map(f => `
+                <tr class="border-b hover:bg-gray-50 transition">
+                    <td class="p-4 font-bold text-gray-700">${f.nome}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="excluir(${f.id})" class="bg-red-50 text-red-500 px-4 py-1 rounded-lg text-sm font-bold hover:bg-red-500 hover:text-white transition">Excluir</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function excluir(id) {
+            let dados = JSON.parse(localStorage.getItem('rh_data')) || [];
+            dados = dados.filter(f => f.id !== id);
+            localStorage.setItem('rh_data', JSON.stringify(dados));
+            renderizarLista();
+        }
+
+        // --- CÁLCULO DE FOLHA (A Mágica do RH) ---
+        function calcularINSS(salario) {
+            if (salario <= 1412) return salario * 0.075;
+            if (salario <= 2666) return salario * 0.09;
+            if (salario <= 4000) return salario * 0.12;
+            return salario * 0.14; // Simplificado para o exemplo
+        }
+
+        function calcularFolha() {
+            const dados = JSON.parse(localStorage.getItem('rh_data')) || [];
+            const container = document.getElementById('cardsFolha');
+            
+            if(dados.length === 0) {
+                container.innerHTML = "<p class='text-gray-500'>Nenhum funcionário para processar.</p>";
+                return;
+            }
+
+            container.innerHTML = dados.map(f => {
+                const inss = calcularINSS(f.salario);
+                const liquido = f.salario - inss;
+                return `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-500">
+                        <h3 class="font-black text-gray-800 mb-4">${f.nome.toUpperCase()}</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between text-gray-500"><span>Salário Base:</span> <b>R$ ${f.salario.toFixed(2)}</b></div>
+                            <div class="flex justify-between text-red-500"><span>Desconto INSS:</span> <b>- R$ ${inss.toFixed(2)}</b></div>
+                            <hr class="my-2">
+                            <div class="flex justify-between text-lg text-blue-700 font-black"><span>LÍQUIDO A RECEBER:</span> <span>R$ ${liquido.toFixed(2)}</span></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        form.onsubmit = (e) => { e.preventDefault(); salvar(); };
+        renderizarLista();
     </script>
 </body>
 </html>
