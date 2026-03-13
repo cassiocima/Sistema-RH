@@ -67,4 +67,131 @@
         <section id="vagas" class="hidden">
             <h2 class="font-black text-2xl mb-6 text-blue-900 italic">Recrutamento & Seleção</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-2xl border-l-8
+                <div class="bg-white p-6 rounded-2xl border-l-8 border-yellow-400 shadow-sm">
+                    <span class="text-[10px] font-black bg-yellow-100 text-yellow-700 px-2 py-1 rounded">VAGA ATIVA</span>
+                    <h3 class="font-black text-xl mt-2 text-slate-800">Analista de DP Pleno</h3>
+                    <p class="text-slate-500 text-sm mt-1">Regime: CLT | Local: Híbrido</p>
+                    <button onclick="alert('Funcionalidade de candidatura em breve!')" class="mt-4 text-blue-600 font-bold text-sm hover:underline">Ver Detalhes →</button>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border-l-8 border-slate-300 shadow-sm opacity-60">
+                    <span class="text-[10px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded">ENCERRADA</span>
+                    <h3 class="font-black text-xl mt-2 text-slate-800">Auxiliar Administrativo</h3>
+                    <p class="text-slate-500 text-sm mt-1">Regime: Presencial | Unidade: Matriz</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="pdf-box" class="hidden p-12 bg-white border">
+        <h1 style="font-size: 28px; font-weight: 900; color: #1e3a8a;">HOLERITE DIGITAL</h1>
+        <p style="margin-top: 10px;">Empresa: RH Master Soluções Trabalhistas</p>
+        <hr style="margin: 20px 0;">
+        <p><strong>NOME:</strong> <span id="p-n"></span></p>
+        <p><strong>SALÁRIO BRUTO:</strong> R$ <span id="p-s"></span></p>
+        <p style="color: #be123c;"><strong>INSS RETIDO (11%):</strong> R$ <span id="p-i"></span></p>
+        <div style="margin-top: 30px; padding: 20px; background: #eff6ff; border-radius: 10px;">
+            <h2 style="font-size: 20px; color: #1e40af;">LÍQUIDO: R$ <span id="p-l"></span></h2>
+        </div>
+    </div>
+
+    <script>
+        // Relógio
+        setInterval(() => {
+            const el = document.getElementById('relogio');
+            if(el) el.innerText = new Date().toLocaleTimeString();
+        }, 1000);
+
+        // Troca de Abas
+        function aba(id) {
+            ['equipe', 'folha', 'ponto', 'vagas'].forEach(a => {
+                document.getElementById(a).classList.add('hidden');
+            });
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'folha') renderFolha();
+            if(id === 'ponto') renderPonto();
+        }
+
+        // --- LÓGICA DE DADOS ---
+        function adicionar() {
+            const n = document.getElementById('fnome').value;
+            const s = document.getElementById('fsalario').value;
+            if(!n || !s) return alert("Erro: Campos vazios!");
+
+            const bd = JSON.parse(localStorage.getItem('rh_v4')) || [];
+            bd.push({ id: Date.now(), nome: n, salario: parseFloat(s) });
+            localStorage.setItem('rh_v4', JSON.stringify(bd));
+
+            document.getElementById('fnome').value = '';
+            document.getElementById('fsalario').value = '';
+            renderEquipe();
+            alert("Sucesso: " + n + " cadastrado!");
+        }
+
+        function renderEquipe() {
+            const bd = JSON.parse(localStorage.getItem('rh_v4')) || [];
+            const tb = document.getElementById('tabela-equipe');
+            tb.innerHTML = bd.map(f => `
+                <tr class="border-b hover:bg-slate-50 transition">
+                    <td class="p-4 font-bold text-slate-700 uppercase text-xs">${f.nome}</td>
+                    <td class="p-4 text-slate-500">R$ ${f.salario.toFixed(2)}</td>
+                    <td class="p-4 text-right"><button onclick="remover(${f.id})" class="text-rose-500 text-xs font-black hover:underline">REMOVER</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function remover(id) {
+            let bd = JSON.parse(localStorage.getItem('rh_v4')) || [];
+            localStorage.setItem('rh_v4', JSON.stringify(bd.filter(x => x.id !== id)));
+            renderEquipe();
+        }
+
+        function renderFolha() {
+            const bd = JSON.parse(localStorage.getItem('rh_v4')) || [];
+            const container = document.getElementById('lista-folha');
+            container.innerHTML = bd.map(f => {
+                const inss = f.salario * 0.11;
+                const liq = f.salario - inss;
+                return `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-blue-600">
+                        <h3 class="font-black text-slate-800">${f.nome.toUpperCase()}</h3>
+                        <p class="text-blue-700 font-bold text-lg mt-2 font-mono">Líquido: R$ ${liq.toFixed(2)}</p>
+                        <button onclick="gerarPDF('${f.nome}', ${f.salario}, ${inss}, ${liq})" class="mt-4 bg-slate-100 text-slate-600 px-4 py-2 rounded-lg text-[10px] font-black hover:bg-slate-800 hover:text-white transition uppercase">Baixar Holerite PDF</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function gerarPDF(n, s, i, l) {
+            document.getElementById('p-n').innerText = n;
+            document.getElementById('p-s').innerText = s.toFixed(2);
+            document.getElementById('p-i').innerText = i.toFixed(2);
+            document.getElementById('p-l').innerText = l.toFixed(2);
+            const box = document.getElementById('pdf-box');
+            box.classList.remove('hidden');
+            html2pdf().from(box).save('Holerite_'+n+'.pdf').then(() => box.classList.add('hidden'));
+        }
+
+        // --- LÓGICA DE PONTO ---
+        function baterPonto(tipo) {
+            const logs = JSON.parse(localStorage.getItem('ponto_v4')) || [];
+            logs.unshift({ tipo, data: new Date().toLocaleString() });
+            localStorage.setItem('ponto_v4', JSON.stringify(logs));
+            renderPonto();
+            alert("Ponto de " + tipo + " gravado!");
+        }
+
+        function renderPonto() {
+            const logs = JSON.parse(localStorage.getItem('ponto_v4')) || [];
+            document.getElementById('tabela-ponto').innerHTML = logs.map(l => `
+                <tr class="border-t"><td class="p-4 text-xs">
+                    <span class="font-black ${l.tipo === 'ENTRADA' ? 'text-emerald-600' : 'text-rose-600'}">${l.tipo}</span> em ${l.data}
+                </td></tr>
+            `).join('');
+        }
+
+        // Inicialização
+        renderEquipe();
+    </script>
+</body>
+</html>
