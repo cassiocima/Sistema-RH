@@ -55,10 +55,38 @@ console.log("✅ Banco de Dados SQLite configurado com as tabelas do Modelo!");
 
 // --- ROTAS DA API ---
 
-// Listar Funcionários (Vindo do Banco Real)
+// ROTA: Listagem com Filtros (Busca por Nome/CPF e Status)
 app.get('/api/employees', (req, res) => {
-    const rows = db.prepare('SELECT * FROM employees').all();
-    res.json(rows);
+    const { search, active } = req.query;
+    let sql = `
+        SELECT e.*, p.name as position_name 
+        FROM employees e
+        LEFT JOIN positions p ON e.position_id = p.id
+        WHERE 1=1
+    `;
+    const params = [];
+
+    // Filtro de Busca (Nome ou CPF) - Regra do Doc 03
+    if (search) {
+        sql += ` AND (e.name LIKE ? OR e.cpf LIKE ?)`;
+        params.push(`%${search}%`, `%${search}%`);
+    }
+
+    // Filtro de Status (Ativo/Inativo) - Regra do Doc 03
+    if (active === '1' || active === '0') {
+        sql += ` AND e.active = ?`;
+        params.push(active);
+    } else if (active !== 'all') {
+        // Por padrão, sua documentação pede apenas os ativos (active = 1)
+        sql += ` AND e.active = 1`;
+    }
+
+    try {
+        const rows = db.prepare(sql).all(...params);
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ erro: "Erro ao buscar funcionários" });
+    }
 });
 
 // ROTA: Cadastrar Funcionário (Com Validações do Doc 03)
