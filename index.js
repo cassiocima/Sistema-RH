@@ -1,3 +1,17 @@
+const express = require('express');
+const Database = require('better-sqlite3');
+const path = require('path');
+
+const app = express();
+const PORT = 3001;
+
+// Cria o arquivo de banco de dados na pasta 'data' (conforme sua arquitetura macro)
+const dbDir = path.join(__dirname, 'data');
+if (!require('fs').existsSync(dbDir)) require('fs').mkdirSync(dbDir);
+const db = new Database(path.join(dbDir, 'folha.db'));
+
+app.use(express.json());
+
 // --- ATUALIZAÇÃO DO ESQUEMA CONFORME DOCUMENTO 03 ---
 db.exec(`
   CREATE TABLE IF NOT EXISTS employees (
@@ -36,3 +50,54 @@ db.exec(`
     FOREIGN KEY(employee_id) REFERENCES employees(id)
   );
 `);
+
+console.log("✅ Banco de Dados SQLite configurado com as tabelas do Modelo!");
+
+// --- ROTAS DA API ---
+
+// Listar Funcionários (Vindo do Banco Real)
+app.get('/api/employees', (req, res) => {
+    const rows = db.prepare('SELECT * FROM employees').all();
+    res.json(rows);
+});
+
+// ROTA: Cadastrar Funcionário (Com Validações do Doc 03)
+app.post('/api/employees', (req, res) => {
+    const { id, name, cpf, birth_date, hire_date, employment_type, pension_regime, base_salary } = req.body;
+
+    // Validação de campos obrigatórios
+    if (!name || !cpf || !birth_date || !hire_date || !employment_type || !pension_regime) {
+        return res.status(400).json({ erro: "Campos obrigatórios ausentes conforme Documento 03." });
+    }
+
+    try {
+        const stmt = db.prepare(`
+            INSERT INTO employees (id, entity_id, name, cpf, birth_date, hire_date, employment_type, pension_regime, base_salary)
+            VALUES (?, 'entity-demo', ?, ?, ?, ?, ?, ?, ?)
+        `);
+        stmt.run(id || require('crypto').randomUUID(), name, cpf, birth_date, hire_date, employment_type, pension_regime, base_salary || 0);
+        res.status(201).json({ mensagem: "Funcionário criado com active = 1" });
+    } catch (e) {
+        res.status(400).json({ erro: "CPF já cadastrado nesta entidade." });
+    }
+});
+
+// ROTA: Editar Funcionário (Apenas campos permitidos)
+app.patch('/api/employees/:id', (req, res) => {
+    const { id } = req.params;
+    const { name, base_salary, active, department } = req.body; // Apenas campos editáveis
+
+    const stmt = db.prepare(`
+        UPDATE employees 
+        SET name = COALESCE(?, name), 
+            base_salary = COALESCE(?, base_salary),
+            active = COALESCE(?, active)
+        WHERE id = ?
+    `);
+    stmt.run(name, base_salary, active, id);
+    res.json({ mensagem: "Dados atualizados (campos protegidos mantidos)." });
+});
+
+app.listen(PORT, () => {
+    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+});
