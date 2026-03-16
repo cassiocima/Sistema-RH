@@ -1,21 +1,34 @@
 /**
- * RH MASTER ERP - Arquivo Principal
- * Aqui é onde o sistema "acorda" e liga os módulos.
+ * RH MASTER ERP - Servidor Express conforme Visão Geral v1.0
  */
+const express = require('express');
+const app = express();
+const PORT = 3001; // Porta padrão da sua documentação
 
-const travas = require('./src/shared/validacoes/travas_seguranca');
-const motor = require('./src/modules/folha/motor_calculo');
-const esocial = require('./src/modules/esocial/gerador_xml');
+app.use(express.json());
 
-console.log("SISTEMA RH MASTER ERP INICIADO");
-console.log("Versão 3.0 - Pronto para cálculos de 2026");
+// Simulação de Banco de Dados (será substituído pelo SQLite em breve)
+let funcionarios = [];
 
-// Exemplo de funcionamento:
-const salarioTeste = 2500.00;
-if (travas.validarSalarioMinimo(salarioTeste)) {
-    console.log("Salário validado com sucesso!");
-    const resultado = motor.calcularImpostos(salarioTeste);
-    console.log("Cálculo realizado:", resultado);
-} else {
-    console.log("ERRO: Salário abaixo do mínimo permitido!");
-}
+// Rota para CADASTRAR funcionários (Passo 1 do seu Fluxo Principal)
+app.post('/api/employees', (req, res) => {
+    const novoFuncionario = req.body;
+    funcionarios.push(novoFuncionario);
+    console.log("Novo funcionário cadastrado:", novoFuncionario.nome);
+    res.status(201).json({ mensagem: "Funcionário cadastrado com sucesso!" });
+});
+
+// Rota para LISTAR funcionários
+app.get('/api/employees', (req, res) => {
+    res.json(funcionarios);
+});
+
+app.listen(PORT, () => {
+    console.log(`
+    =============================================
+    RH MASTER ERP - BACKEND INICIADO
+    Porta: ${PORT}
+    Status: Pronto para Processamento de Folha
+    =============================================
+    `);
+});
