@@ -1,47 +1,74 @@
-/**
- * RH MASTER ERP - Servidor com Banco em Arquivo
- * Conforme Visão Geral: Cadastro e Fluxo de Processamento
- */
 const express = require('express');
-const fs = require('fs');
+const Database = require('better-sqlite3');
 const path = require('path');
+
 const app = express();
 const PORT = 3001;
 
-// Caminho para o nosso "banco de dados" (um arquivo simples)
-const DB_FILE = path.join(__dirname, 'database', 'folha_dados.json');
-
-// Garante que a pasta database existe
-if (!fs.existsSync('./database')) fs.mkdirSync('./database');
+// Cria o arquivo de banco de dados na pasta 'data' (conforme sua arquitetura macro)
+const dbDir = path.join(__dirname, 'data');
+if (!require('fs').existsSync(dbDir)) require('fs').mkdirSync(dbDir);
+const db = new Database(path.join(dbDir, 'folha.db'));
 
 app.use(express.json());
 
-// Função para ler o arquivo (O nosso "SQL" manual)
-const lerBanco = () => {
-    if (!fs.existsSync(DB_FILE)) return [];
-    return JSON.parse(fs.readFileSync(DB_FILE));
-};
+// --- CRIAÇÃO DAS TABELAS (CONFORME SEU MODELO DE DADOS) ---
+db.exec(`
+  CREATE TABLE IF NOT EXISTS entities (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    cnpj TEXT UNIQUE NOT NULL,
+    type TEXT CHECK(type IN ('private','public')),
+    regime TEXT CHECK(regime IN ('clt','rju','mixed')),
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 
-// Rota para CADASTRAR (Passo 1 do Fluxo Principal)
-app.post('/api/employees', (req, res) => {
-    const lista = lerBanco();
-    const novoFuncionario = req.body;
-    
-    lista.push(novoFuncionario);
-    
-    // Salva no arquivo - os dados não somem se desligar o PC!
-    fs.writeFileSync(DB_FILE, JSON.stringify(lista, null, 2));
-    
-    console.log("✅ Funcionário salvo no banco:", novoFuncionario.nome);
-    res.status(201).json({ mensagem: "Salvo com sucesso!" });
+  CREATE TABLE IF NOT EXISTS positions (
+    id TEXT PRIMARY KEY,
+    entity_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    base_salary REAL DEFAULT 0,
+    FOREIGN KEY(entity_id) REFERENCES entities(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS employees (
+    id TEXT PRIMARY KEY,
+    entity_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    cpf TEXT NOT NULL,
+    hire_date TEXT NOT NULL,
+    base_salary REAL NOT NULL DEFAULT 0,
+    FOREIGN KEY(entity_id) REFERENCES entities(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS payroll_periods (
+    id TEXT PRIMARY KEY,
+    entity_id TEXT NOT NULL,
+    year INTEGER NOT NULL,
+    month INTEGER NOT NULL,
+    status TEXT DEFAULT 'open',
+    FOREIGN KEY(entity_id) REFERENCES entities(id)
+  );
+`);
+
+console.log("✅ Banco de Dados SQLite configurado com as tabelas do Modelo!");
+
+// --- ROTAS DA API ---
+
+// Listar Funcionários (Vindo do Banco Real)
+app.get('/api/employees', (req, res) => {
+    const rows = db.prepare('SELECT * FROM employees').all();
+    res.json(rows);
 });
 
-// Rota para LISTAR
-app.get('/api/employees', (req, res) => {
-    res.json(lerBanco());
+// Cadastrar Funcionário (Gravando no Banco Real)
+app.post('/api/employees', (req, res) => {
+    const { id, name, cpf, hire_date, base_salary } = req.body;
+    const stmt = db.prepare('INSERT INTO employees (id, entity_id, name, cpf, hire_date, base_salary) VALUES (?, ?, ?, ?, ?, ?)');
+    stmt.run(id, 'entity-demo', name, cpf, hire_date, base_salary);
+    res.json({ mensagem: "Funcionário gravado no SQLite!" });
 });
 
 app.listen(PORT, () => {
-    console.log(`🚀 SERVIDOR RODANDO EM http://localhost:${PORT}`);
-    console.log(`📁 BANCO DE DADOS ATIVO EM: ${DB_FILE}`);
+    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });
